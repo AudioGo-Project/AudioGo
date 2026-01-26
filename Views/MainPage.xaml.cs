@@ -1,4 +1,4 @@
-﻿namespace AudioGo_Mobile;
+﻿namespace AudioGo_Mobile.Views;
 
 public partial class MainPage : ContentPage
 {
