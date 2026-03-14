@@ -1,0 +1,38 @@
+@page
+@model WebApp.Pages.CmsModel
+@{
+    ViewData["Title"] = "CMS - Quản lý POI";
+}
+
+<div class="container mt-4">
+    <h1>🗺️ Quản lý Điểm tham quan (POI)</h1>
+    <p class="text-muted">Dành cho <strong>Quản lý quán</strong> — thêm, sửa, xoá nội dung thuyết minh tại các điểm tham quan.</p>
+
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Tên điểm</th>
+                <th>Mô tả</th>
+                <th>Bán kính (m)</th>
+                <th>Ngôn ngữ</th>
+                <th>Loại Audio</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="poi-table-body">
+            <tr>
+                <td colspan="7" class="text-center text-muted">Đang tải dữ liệu từ API…</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary" onclick="alert('TODO: mở form thêm POI mới')">+ Thêm POI</button>
+</div>
+
+@section Scripts {
+<script>
+    // TODO: fetch từ WebApi /api/poi và render vào bảng
+    console.log("CMS page loaded — connect to WebApi /api/poi");
+</script>
+}

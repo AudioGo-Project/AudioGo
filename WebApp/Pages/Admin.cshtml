@@ -1,0 +1,47 @@
+@page
+@model WebApp.Pages.AdminModel
+@{
+    ViewData["Title"] = "Admin - Quản trị hệ thống";
+}
+
+<div class="container mt-4">
+    <h1>⚙️ Quản trị hệ thống</h1>
+    <p class="text-muted">Dành cho <strong>Admin</strong> — giám sát hệ thống, quản lý người dùng và cấu hình toàn cục.</p>
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Tổng POI</div>
+                <div class="card-body">
+                    <h5 class="card-title" id="poi-count">—</h5>
+                    <p class="card-text">Điểm tham quan đang hoạt động</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Người dùng</div>
+                <div class="card-body">
+                    <h5 class="card-title" id="user-count">—</h5>
+                    <p class="card-text">Quản lý quán đã đăng ký</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Trạng thái Server</div>
+                <div class="card-body">
+                    <h5 class="card-title">🟢 Online</h5>
+                    <p class="card-text">API đang hoạt động bình thường</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // TODO: fetch thống kê từ WebApi /api/admin/stats
+    console.log("Admin dashboard loaded — connect to WebApi /api/admin/stats");
+</script>
+}

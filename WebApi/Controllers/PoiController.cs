@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 
-namespace Server.Controllers
+namespace WebApi.Controllers
 {
+    /// <summary>
+    /// REST API for managing POIs via the Web CMS / Admin portal.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class PoiController : ControllerBase
     {
-        // TODO: inject IPoiRepository or DbContext when database is wired up
+        // TODO: inject IPoiRepository or DbContext when database is wired up.
+        // NOTE: static mock list is not thread-safe — replace with a proper repository before production use.
         private static readonly List<POI> _mockPois = new()
         {
             new POI { Id = 1, Name = "Bún bò Huế Cô Hai", Description = "Quán bún bò nổi tiếng đầu phố", Latitude = 10.7278, Longitude = 106.7009, RadiusMeters = 20, Priority = 1, Language = "vi", AudioType = "tts", AudioSource = "Chào mừng bạn đến với quán Bún bò Huế Cô Hai." },
