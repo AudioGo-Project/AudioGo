@@ -1,5 +1,5 @@
 CREATE TABLE [Account] (
-  [AccountID] int PRIMARY KEY IDENTITY(1, 1),
+  [AccountID] nvarchar(255) PRIMARY KEY,
   [Username] nvarchar(255),
   [PasswordHash] nvarchar(255),
   [Role] nvarchar(255),
@@ -9,8 +9,8 @@ CREATE TABLE [Account] (
 GO
 
 CREATE TABLE [POI] (
-  [POI_ID] int PRIMARY KEY IDENTITY(1, 1),
-  [AccountID] int,
+  [POI_ID] nvarchar(255) PRIMARY KEY,
+  [AccountID] nvarchar(255),
   [Latitude] float,
   [Longitude] float,
   [ActivationRadius] int,
@@ -23,8 +23,8 @@ CREATE TABLE [POI] (
 GO
 
 CREATE TABLE [POI_Content] (
-  [Content_ID] int PRIMARY KEY IDENTITY(1, 1),
-  [POI_ID] int,
+  [Content_ID] nvarchar(255) PRIMARY KEY,
+  [POI_ID] nvarchar(255),
   [LanguageCode] nvarchar(255),
   [Title] nvarchar(255),
   [Description] text,
@@ -37,8 +37,8 @@ CREATE TABLE [POI_Content] (
 GO
 
 CREATE TABLE [POI_Gallery] (
-  [Image_ID] int PRIMARY KEY IDENTITY(1, 1),
-  [POI_ID] int,
+  [Image_ID] nvarchar(255) PRIMARY KEY,
+  [POI_ID] nvarchar(255),
   [Image_URL] nvarchar(255),
   [SortOrder] int,
   [CreatedAt] datetime DEFAULT (now()),
@@ -47,7 +47,7 @@ CREATE TABLE [POI_Gallery] (
 GO
 
 CREATE TABLE [Category] (
-  [Category_ID] int PRIMARY KEY IDENTITY(1, 1),
+  [Category_ID] nvarchar(255) PRIMARY KEY,
   [Name] nvarchar(255),
   [CreatedAt] datetime DEFAULT (now()),
   [UpdatedAt] datetime
@@ -55,14 +55,14 @@ CREATE TABLE [Category] (
 GO
 
 CREATE TABLE [Category_POI] (
-  [Category_ID] int,
-  [POI_ID] int,
+  [Category_ID] nvarchar(255),
+  [POI_ID] nvarchar(255),
   PRIMARY KEY ([Category_ID], [POI_ID])
 )
 GO
 
 CREATE TABLE [Tour] (
-  [Tour_ID] int PRIMARY KEY IDENTITY(1, 1),
+  [Tour_ID] nvarchar(255) PRIMARY KEY,
   [Name] nvarchar(255),
   [Description] text,
   [CreatedAt] datetime DEFAULT (now()),
@@ -71,24 +71,24 @@ CREATE TABLE [Tour] (
 GO
 
 CREATE TABLE [Tour_POI] (
-  [Tour_ID] int,
-  [POI_ID] int,
+  [Tour_ID] nvarchar(255),
+  [POI_ID] nvarchar(255),
   [StepOrder] int,
   PRIMARY KEY ([Tour_ID], [POI_ID])
 )
 GO
 
 CREATE TABLE [Listen_History] (
-  [History_ID] int PRIMARY KEY IDENTITY(1, 1),
+  [History_ID] nvarchar(255) PRIMARY KEY,
   [DeviceID] nvarchar(255),
-  [POI_ID] int,
+  [POI_ID] nvarchar(255),
   [Timestamp] datetime DEFAULT (now()),
   [ListenDuration] int
 )
 GO
 
 CREATE TABLE [Location_Log] (
-  [Location_ID] int PRIMARY KEY IDENTITY(1, 1),
+  [Location_ID] nvarchar(255) PRIMARY KEY,
   [DeviceID] nvarchar(255),
   [Latitude] float,
   [Longitude] float,
