@@ -258,3 +258,4 @@ docs/
 .agents/
 skills/
 skills-lock.json
+.mcp.json
