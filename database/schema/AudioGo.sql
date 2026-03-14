@@ -1,121 +1,208 @@
 CREATE TABLE [Account] (
-  [AccountID] nvarchar(255) PRIMARY KEY,
+  [AccountId] nvarchar(255) PRIMARY KEY,
   [Username] nvarchar(255),
   [PasswordHash] nvarchar(255),
   [Role] nvarchar(255),
-  [CreatedAt] datetime DEFAULT (now()),
+  [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )
 GO
 
-CREATE TABLE [POI] (
-  [POI_ID] nvarchar(255) PRIMARY KEY,
-  [AccountID] nvarchar(255),
+CREATE TABLE [Poi] (
+  [PoiId] nvarchar(255) PRIMARY KEY,
+  [AccountId] nvarchar(255),
   [Latitude] float,
   [Longitude] float,
   [ActivationRadius] int,
   [Priority] int,
   [Status] nvarchar(255),
-  [Logo_URL] nvarchar(255),
-  [CreatedAt] datetime DEFAULT (now()),
+  [LogoUrl] nvarchar(255),
+  [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )
 GO
 
-CREATE TABLE [POI_Content] (
-  [Content_ID] nvarchar(255) PRIMARY KEY,
-  [POI_ID] nvarchar(255),
+CREATE TABLE [PoiContent] (
+  [ContentId] nvarchar(255) PRIMARY KEY,
+  [PoiId] nvarchar(255),
   [LanguageCode] nvarchar(255),
   [Title] nvarchar(255),
   [Description] text,
-  [Audio_URL] nvarchar(255),
-  [localAudio_Path] nvarchar(255),
-  [isMaster] boolean,
-  [CreatedAt] datetime DEFAULT (now()),
+  [AudioUrl] nvarchar(255),
+  [LocalAudioPath] nvarchar(255),
+  [IsMaster] bit,
+  [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )
 GO
 
-CREATE TABLE [POI_Gallery] (
-  [Image_ID] nvarchar(255) PRIMARY KEY,
-  [POI_ID] nvarchar(255),
-  [Image_URL] nvarchar(255),
+CREATE TABLE [PoiGallery] (
+  [ImageId] nvarchar(255) PRIMARY KEY,
+  [PoiId] nvarchar(255),
+  [ImageUrl] nvarchar(255),
   [SortOrder] int,
-  [CreatedAt] datetime DEFAULT (now()),
+  [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )
 GO
 
 CREATE TABLE [Category] (
-  [Category_ID] nvarchar(255) PRIMARY KEY,
+  [CategoryId] nvarchar(255) PRIMARY KEY,
   [Name] nvarchar(255),
-  [CreatedAt] datetime DEFAULT (now()),
+  [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )
 GO
 
-CREATE TABLE [Category_POI] (
-  [Category_ID] nvarchar(255),
-  [POI_ID] nvarchar(255),
-  PRIMARY KEY ([Category_ID], [POI_ID])
+CREATE TABLE [CategoryPoi] (
+  [CategoryId] nvarchar(255),
+  [PoiId] nvarchar(255),
+  PRIMARY KEY ([CategoryId], [PoiId])
 )
 GO
 
 CREATE TABLE [Tour] (
-  [Tour_ID] nvarchar(255) PRIMARY KEY,
+  [TourId] nvarchar(255) PRIMARY KEY,
   [Name] nvarchar(255),
   [Description] text,
-  [CreatedAt] datetime DEFAULT (now()),
+  [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )
 GO
 
-CREATE TABLE [Tour_POI] (
-  [Tour_ID] nvarchar(255),
-  [POI_ID] nvarchar(255),
+CREATE TABLE [TourPoi] (
+  [TourId] nvarchar(255),
+  [PoiId] nvarchar(255),
   [StepOrder] int,
-  PRIMARY KEY ([Tour_ID], [POI_ID])
+  PRIMARY KEY ([TourId], [PoiId])
 )
 GO
 
-CREATE TABLE [Listen_History] (
-  [History_ID] nvarchar(255) PRIMARY KEY,
-  [DeviceID] nvarchar(255),
-  [POI_ID] nvarchar(255),
-  [Timestamp] datetime DEFAULT (now()),
+CREATE TABLE [ListenHistory] (
+  [HistoryId] nvarchar(255) PRIMARY KEY,
+  [DeviceId] nvarchar(255),
+  [PoiId] nvarchar(255),
+  [Timestamp] datetime DEFAULT (GETDATE()),
   [ListenDuration] int
 )
 GO
 
-CREATE TABLE [Location_Log] (
-  [Location_ID] nvarchar(255) PRIMARY KEY,
-  [DeviceID] nvarchar(255),
+CREATE TABLE [LocationLog] (
+  [LocationId] nvarchar(255) PRIMARY KEY,
+  [DeviceId] nvarchar(255),
   [Latitude] float,
   [Longitude] float,
-  [Timestamp] datetime DEFAULT (now())
+  [Timestamp] datetime DEFAULT (GETDATE())
 )
 GO
 
-ALTER TABLE [POI] ADD FOREIGN KEY ([AccountID]) REFERENCES [Account] ([AccountID])
+ALTER TABLE [Poi] ADD FOREIGN KEY ([AccountId]) REFERENCES [Account] ([AccountId])
 GO
 
-ALTER TABLE [POI_Content] ADD FOREIGN KEY ([POI_ID]) REFERENCES [POI] ([POI_ID])
+ALTER TABLE [PoiContent] ADD FOREIGN KEY ([PoiId]) REFERENCES [Poi] ([PoiId])
 GO
 
-ALTER TABLE [POI_Gallery] ADD FOREIGN KEY ([POI_ID]) REFERENCES [POI] ([POI_ID])
+ALTER TABLE [PoiGallery] ADD FOREIGN KEY ([PoiId]) REFERENCES [Poi] ([PoiId])
 GO
 
-ALTER TABLE [Category_POI] ADD FOREIGN KEY ([Category_ID]) REFERENCES [Category] ([Category_ID])
+ALTER TABLE [CategoryPoi] ADD FOREIGN KEY ([CategoryId]) REFERENCES [Category] ([CategoryId])
 GO
 
-ALTER TABLE [Category_POI] ADD FOREIGN KEY ([POI_ID]) REFERENCES [POI] ([POI_ID])
+ALTER TABLE [CategoryPoi] ADD FOREIGN KEY ([PoiId]) REFERENCES [Poi] ([PoiId])
 GO
 
-ALTER TABLE [Tour_POI] ADD FOREIGN KEY ([Tour_ID]) REFERENCES [Tour] ([Tour_ID])
+ALTER TABLE [TourPoi] ADD FOREIGN KEY ([TourId]) REFERENCES [Tour] ([TourId])
 GO
 
-ALTER TABLE [Tour_POI] ADD FOREIGN KEY ([POI_ID]) REFERENCES [POI] ([POI_ID])
+ALTER TABLE [TourPoi] ADD FOREIGN KEY ([PoiId]) REFERENCES [Poi] ([PoiId])
 GO
 
-ALTER TABLE [Listen_History] ADD FOREIGN KEY ([POI_ID]) REFERENCES [POI] ([POI_ID])
+ALTER TABLE [ListenHistory] ADD FOREIGN KEY ([PoiId]) REFERENCES [Poi] ([PoiId])
+GO
+
+-- ==================== CONSTRAINTS ====================
+
+-- Unique constraint on username
+ALTER TABLE [Account] ADD CONSTRAINT [UQ_Account_Username] UNIQUE ([Username])
+GO
+
+-- Not null constraints
+ALTER TABLE [Account] ALTER COLUMN [AccountId] nvarchar(255) NOT NULL
+ALTER TABLE [Account] ALTER COLUMN [Username] nvarchar(255) NOT NULL
+ALTER TABLE [Account] ALTER COLUMN [PasswordHash] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [Poi] ALTER COLUMN [PoiId] nvarchar(255) NOT NULL
+ALTER TABLE [Poi] ALTER COLUMN [AccountId] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [PoiContent] ALTER COLUMN [ContentId] nvarchar(255) NOT NULL
+ALTER TABLE [PoiContent] ALTER COLUMN [PoiId] nvarchar(255) NOT NULL
+ALTER TABLE [PoiContent] ALTER COLUMN [LanguageCode] nvarchar(255) NOT NULL
+ALTER TABLE [PoiContent] ALTER COLUMN [Title] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [PoiGallery] ALTER COLUMN [ImageId] nvarchar(255) NOT NULL
+ALTER TABLE [PoiGallery] ALTER COLUMN [PoiId] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [Category] ALTER COLUMN [CategoryId] nvarchar(255) NOT NULL
+ALTER TABLE [Category] ALTER COLUMN [Name] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [Tour] ALTER COLUMN [TourId] nvarchar(255) NOT NULL
+ALTER TABLE [Tour] ALTER COLUMN [Name] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [ListenHistory] ALTER COLUMN [HistoryId] nvarchar(255) NOT NULL
+ALTER TABLE [ListenHistory] ALTER COLUMN [DeviceId] nvarchar(255) NOT NULL
+ALTER TABLE [ListenHistory] ALTER COLUMN [PoiId] nvarchar(255) NOT NULL
+GO
+
+ALTER TABLE [LocationLog] ALTER COLUMN [LocationId] nvarchar(255) NOT NULL
+ALTER TABLE [LocationLog] ALTER COLUMN [DeviceId] nvarchar(255) NOT NULL
+GO
+
+-- ==================== INDEXES ====================
+
+-- Poi table indexes
+CREATE INDEX [IX_Poi_AccountId] ON [Poi] ([AccountId])
+GO
+
+CREATE INDEX [IX_Poi_Status] ON [Poi] ([Status])
+GO
+
+-- PoiContent table indexes
+CREATE INDEX [IX_PoiContent_PoiId] ON [PoiContent] ([PoiId])
+GO
+
+CREATE INDEX [IX_PoiContent_LanguageCode] ON [PoiContent] ([LanguageCode])
+GO
+
+-- PoiGallery table indexes
+CREATE INDEX [IX_PoiGallery_PoiId] ON [PoiGallery] ([PoiId])
+GO
+
+-- ListenHistory table indexes
+CREATE INDEX [IX_ListenHistory_DeviceId] ON [ListenHistory] ([DeviceId])
+GO
+
+CREATE INDEX [IX_ListenHistory_PoiId] ON [ListenHistory] ([PoiId])
+GO
+
+CREATE INDEX [IX_ListenHistory_Timestamp] ON [ListenHistory] ([Timestamp])
+GO
+
+-- LocationLog table indexes
+CREATE INDEX [IX_LocationLog_DeviceId] ON [LocationLog] ([DeviceId])
+GO
+
+CREATE INDEX [IX_LocationLog_Timestamp] ON [LocationLog] ([Timestamp])
+GO
+
+-- Composite indexes for common queries
+CREATE INDEX [IX_ListenHistory_DeviceId_Timestamp] ON [ListenHistory] ([DeviceId], [Timestamp])
+GO
+
+CREATE INDEX [IX_LocationLog_DeviceId_Timestamp] ON [LocationLog] ([DeviceId], [Timestamp])
 GO
