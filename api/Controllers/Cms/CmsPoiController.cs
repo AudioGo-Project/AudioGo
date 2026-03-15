@@ -5,6 +5,7 @@ using Server.Data;
 using Server.Models;
 using Server.Repositories.Interfaces;
 using Shared.DTOs;
+using System.Security.Claims;
 
 namespace Server.Controllers.Cms
 {
@@ -58,10 +59,13 @@ namespace Server.Controllers.Cms
         [HttpPost]
         public async Task<ActionResult<Poi>> Create([FromBody] PoiCreateRequest req)
         {
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId)) return Unauthorized();
+
             var poi = new Poi
             {
                 PoiId            = Guid.NewGuid().ToString(),
-                AccountId        = User.Identity?.Name ?? string.Empty,
+                AccountId        = accountId,
                 Latitude         = req.Latitude,
                 Longitude        = req.Longitude,
                 ActivationRadius = req.ActivationRadius,

@@ -27,7 +27,7 @@ CREATE TABLE [PoiContent] (
   [PoiId] nvarchar(255),
   [LanguageCode] nvarchar(255),
   [Title] nvarchar(255),
-  [Description] text,
+  [Description] nvarchar(max),
   [AudioUrl] nvarchar(255),
   [LocalAudioPath] nvarchar(255),
   [IsMaster] bit,
@@ -64,7 +64,7 @@ GO
 CREATE TABLE [Tour] (
   [TourId] nvarchar(255) PRIMARY KEY,
   [Name] nvarchar(255),
-  [Description] text,
+  [Description] nvarchar(max),
   [CreatedAt] datetime DEFAULT (GETDATE()),
   [UpdatedAt] datetime
 )

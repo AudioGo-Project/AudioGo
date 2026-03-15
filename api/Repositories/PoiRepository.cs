@@ -24,7 +24,6 @@ namespace Server.Repositories
             const double EarthR = 6_371_000;
             double latRad = lat * Math.PI / 180;
             double lonRad = lon * Math.PI / 180;
-            double r      = radiusMeters / EarthR;
 
             // Lấy candidate với bounding-box trước, filter chính xác ở client
             double latDelta = radiusMeters / 111_000;

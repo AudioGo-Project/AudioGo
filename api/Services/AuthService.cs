@@ -42,7 +42,7 @@ namespace Server.Services
                 AccountId    = Guid.NewGuid().ToString(),
                 Username     = req.Username,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
-                Role         = req.Role,
+                Role         = "Manager",
                 CreatedAt    = DateTime.UtcNow
             };
             _db.Accounts.Add(account);

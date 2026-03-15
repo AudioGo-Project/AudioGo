@@ -33,17 +33,17 @@ namespace Server.Controllers.Cms
         {
             var topPois = await _history.GetTopPoisAsync(top);
 
-            // Enrich với title từ PoiContent (ngôn ngữ mặc định vi)
-            var result = new List<TopPoiDto>();
-            foreach (var (poiId, count) in topPois)
-            {
-                var title = await _db.PoiContents.AsNoTracking()
-                    .Where(c => c.PoiId == poiId && (c.IsMaster || c.LanguageCode == "vi"))
-                    .Select(c => c.Title)
-                    .FirstOrDefaultAsync() ?? poiId;
+            // 1 query duy nhất lấy tất cả titles — tránh N+1
+            var poiIds = topPois.Select(tp => tp.poiId).ToList();
+            var titles = await _db.PoiContents.AsNoTracking()
+                .Where(c => poiIds.Contains(c.PoiId) && (c.IsMaster || c.LanguageCode == "vi"))
+                .GroupBy(c => c.PoiId)
+                .Select(g => new { PoiId = g.Key, Title = g.First().Title })
+                .ToDictionaryAsync(x => x.PoiId, x => x.Title);
 
-                result.Add(new TopPoiDto(poiId, title, count));
-            }
+            var result = topPois
+                .Select(tp => new TopPoiDto(tp.poiId, titles.GetValueOrDefault(tp.poiId, tp.poiId), tp.count))
+                .ToList();
             return Ok(result);
         }
 
