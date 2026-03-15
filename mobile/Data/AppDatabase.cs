@@ -15,7 +15,16 @@ namespace AudioGo.Data
 
         public async Task InitAsync()
         {
-            await _db.CreateTableAsync<PoiEntity>();
+            try
+            {
+                await _db.CreateTableAsync<PoiEntity>();
+            }
+            catch (SQLiteException)
+            {
+                // Schema thay đổi không tương thích — drop và tạo lại
+                await _db.DropTableAsync<PoiEntity>();
+                await _db.CreateTableAsync<PoiEntity>();
+            }
         }
 
         public Task<List<PoiEntity>> GetAllPoisAsync() => _db.Table<PoiEntity>().ToListAsync();

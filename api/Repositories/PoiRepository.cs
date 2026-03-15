@@ -11,10 +11,14 @@ namespace Server.Repositories
         public PoiRepository(AppDbContext db) => _db = db;
 
         public Task<List<Poi>> GetAllAsync() =>
-            _db.Pois.AsNoTracking().ToListAsync();
+            _db.Pois.AsNoTracking()
+                .Include(p => p.Contents)
+                .ToListAsync();
 
         public Task<Poi?> GetByIdAsync(string poiId) =>
-            _db.Pois.AsNoTracking().FirstOrDefaultAsync(p => p.PoiId == poiId);
+            _db.Pois.AsNoTracking()
+                .Include(p => p.Contents)
+                .FirstOrDefaultAsync(p => p.PoiId == poiId);
 
         /// <summary>
         /// Haversine filter: lấy POI trong bán kính (metres) từ toạ độ cho trước.
@@ -30,6 +34,7 @@ namespace Server.Repositories
             double lonDelta = radiusMeters / (111_000 * Math.Cos(latRad));
 
             var candidates = await _db.Pois.AsNoTracking()
+                .Include(p => p.Contents)
                 .Where(p => p.Latitude  >= lat - latDelta && p.Latitude  <= lat + latDelta
                          && p.Longitude >= lon - lonDelta && p.Longitude <= lon + lonDelta
                          && p.Status == "active")

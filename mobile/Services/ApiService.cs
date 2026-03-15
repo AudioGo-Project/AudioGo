@@ -1,5 +1,6 @@
 using AudioGo.Services.Interfaces;
 using Shared;
+using Shared.DTOs;
 using System.Net.Http.Json;
 
 namespace AudioGo.Services
@@ -35,12 +36,11 @@ namespace AudioGo.Services
 
         public async Task PostLocationLogAsync(string deviceId, double latitude, double longitude, CancellationToken ct = default)
         {
-            await _http.PostAsJsonAsync("api/mobile/location-log", new
-            {
-                DeviceId = deviceId,
-                Latitude = latitude,
-                Longitude = longitude
-            }, ct);
+            await _http.PostAsJsonAsync("api/mobile/location-log",
+                new LocationLogBatchRequest(deviceId, new[]
+                {
+                    new LocationPoint(latitude, longitude, DateTime.UtcNow)
+                }), ct);
         }
     }
 }

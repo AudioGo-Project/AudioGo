@@ -34,7 +34,7 @@ namespace Server.Controllers.Cms
             var topPois = await _history.GetTopPoisAsync(top);
 
             // 1 query duy nhất lấy tất cả titles — tránh N+1
-            var poiIds = topPois.Select(tp => tp.poiId).ToList();
+            var poiIds = topPois.Select(tp => tp.PoiId).ToList();
             var titles = await _db.PoiContents.AsNoTracking()
                 .Where(c => poiIds.Contains(c.PoiId) && (c.IsMaster || c.LanguageCode == "vi"))
                 .GroupBy(c => c.PoiId)
@@ -42,7 +42,7 @@ namespace Server.Controllers.Cms
                 .ToDictionaryAsync(x => x.PoiId, x => x.Title);
 
             var result = topPois
-                .Select(tp => new TopPoiDto(tp.poiId, titles.GetValueOrDefault(tp.poiId, tp.poiId), tp.count))
+                .Select(tp => new TopPoiDto(tp.PoiId, titles.GetValueOrDefault(tp.PoiId, tp.PoiId), tp.Count))
                 .ToList();
             return Ok(result);
         }

@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace AudioGo_Mobile;
+﻿namespace AudioGo_Mobile;
 
 public partial class App : Application
 {

@@ -56,6 +56,13 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var mauiApp = builder.Build();
+
+        // Init SQLite tables trên thread pool — tránh deadlock SynchronizationContext
+        // Task.Run() đảm bảo chạy trên thread không có SynchronizationContext
+        Task.Run(() => mauiApp.Services.GetRequiredService<AppDatabase>().InitAsync())
+            .GetAwaiter().GetResult();
+
+        return mauiApp;
     }
 }
