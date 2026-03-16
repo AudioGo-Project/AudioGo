@@ -7,19 +7,23 @@
     Title="AudioGo">
 
     <TabBar>
-        <!-- Tab Bản đồ -->
+        <ShellContent
+            Title="Trang chủ"
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:MainPage}"
+            Route="MainPage" />
+
         <ShellContent
             Title="Bản đồ"
             Icon="map.png"
             ContentTemplate="{DataTemplate views:MapPage}"
             Route="MapPage" />
 
-        <!-- Tab Trang chủ -->
         <ShellContent
-            Title="Trang chủ"
-            Icon="home.png"
-            ContentTemplate="{DataTemplate views:MainPage}"
-            Route="MainPage" />
+            Title="Tour"
+            Icon="tour.png"
+            ContentTemplate="{DataTemplate views:TourListPage}"
+            Route="TourListPage" />
     </TabBar>
 
 </Shell>

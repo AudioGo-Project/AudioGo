@@ -49,6 +49,7 @@ public static class MauiProgram
         // ── Views ─────────────────────────────────────────────────
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<MapPage>();
+        builder.Services.AddSingleton<TourListPage>();
         builder.Services.AddTransient<PoiDetailPage>();
         builder.Services.AddTransient<QrScanPage>();
 
@@ -58,10 +59,10 @@ public static class MauiProgram
 
         var mauiApp = builder.Build();
 
-        // Init SQLite tables trên thread pool — tránh deadlock SynchronizationContext
-        // Task.Run() đảm bảo chạy trên thread không có SynchronizationContext
-        Task.Run(() => mauiApp.Services.GetRequiredService<AppDatabase>().InitAsync())
-            .GetAwaiter().GetResult();
+        // Init SQLite tables trên background thread — không block main thread khi startup
+        // Dùng Task.Run để tránh deadlock SynchronizationContext; fire-and-forget vì
+        // DB chưa cần thiết trước khi page đầu tiên OnAppearing
+        _ = Task.Run(() => mauiApp.Services.GetRequiredService<AppDatabase>().InitAsync());
 
         return mauiApp;
     }

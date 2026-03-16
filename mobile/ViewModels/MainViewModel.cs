@@ -83,6 +83,16 @@ namespace AudioGo.ViewModels
             await _audio.StopAsync();
         }
 
+        /// <summary>Called from MapPage mini-play FAB to (re)play the active POI audio.</summary>
+        public async Task TriggerAudioAsync(POI poi)
+        {
+            if (!string.IsNullOrEmpty(poi.AudioUrl))
+                await _audio.PlayFileAsync(poi.AudioUrl);
+            else if (!string.IsNullOrEmpty(poi.Description))
+                await _audio.SpeakAsync(poi.Description, poi.LanguageCode);
+            OnPropertyChanged(nameof(IsAudioPlaying));
+        }
+
         private void OnLocationUpdated(object? sender, (double Lat, double Lon) loc)
             => _geofence.OnLocationUpdated(loc.Lat, loc.Lon);
 

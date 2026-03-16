@@ -1,23 +1,25 @@
-﻿namespace AudioGo_Mobile.Views;
+using AudioGo.ViewModels;
+
+namespace AudioGo_Mobile.Views;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+    private readonly MainViewModel _vm;
 
-	public MainPage()
-	{
-		InitializeComponent();
-	}
+    public MainPage(MainViewModel vm)
+    {
+        InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
+    }
 
-	private void OnCounterClicked(object? sender, EventArgs e)
-	{
-		count++;
-
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        // Load data on start if empty
+        if (_vm.Pois == null || !_vm.Pois.Any())
+        {
+            await _vm.InitAsync();
+        }
+    }
 }
