@@ -47,6 +47,21 @@ namespace AudioGo.ViewModels
         // ── Audio state ────────────────────────────────────────────
         public bool IsPlaying => _audio.IsPlaying;
 
+        private double _audioProgress = 0;
+        public double AudioProgress
+        {
+            get => _audioProgress;
+            set { SetProperty(ref _audioProgress, value); }
+        }
+
+        public async Task TogglePlayPauseAsync()
+        {
+            if (IsPlaying)
+                await StopAudioAsync();
+            else
+                await PlayAudioAsync();
+        }
+
         public PoiDetailViewModel(AppDatabase db, IAudioService audio)
         {
             _db = db;

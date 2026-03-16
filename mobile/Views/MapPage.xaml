@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="AudioGo_Mobile.Views.MapPage"
+             Shell.NavBarIsVisible="False"
              Title="Bản đồ">
 
     <Grid>
@@ -11,47 +12,129 @@
                   IsShowingUser="True"
                   MapType="Street" />
 
-        <!-- Nút quét QR — góc dưới phải -->
-        <Button Text="Quét QR"
-                Clicked="OnQrScanClicked"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="16"
-                BackgroundColor="#1976D2"
-                TextColor="White"
-                CornerRadius="24"
-                Padding="16,10"
-                Shadow="{Shadow Brush=Black, Offset='2,2', Radius=4, Opacity=0.3}" />
+        <!-- Floating Search Bar — top overlay -->
+        <Border BackgroundColor="{StaticResource Surface}"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 28"
+                Padding="12,0"
+                HorizontalOptions="Fill"
+                VerticalOptions="Start"
+                Margin="16,52,16,0">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,2" Radius="12" Opacity="0.10"/>
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <Label Grid.Column="0"
+                       Text="🔍"
+                       FontSize="18"
+                       VerticalOptions="Center"
+                       Padding="4,0" />
+                <Entry Grid.Column="1"
+                       Placeholder="Tìm địa điểm..."
+                       PlaceholderColor="{StaticResource TextTertiary}"
+                       TextColor="{StaticResource TextPrimary}"
+                       BackgroundColor="Transparent"
+                       FontSize="15"
+                       ReturnType="Search"
+                       VerticalOptions="Center"
+                       HeightRequest="48" />
+                <Label Grid.Column="2"
+                       Text="⚙️"
+                       FontSize="18"
+                       VerticalOptions="Center"
+                       Padding="4,0" />
+            </Grid>
+        </Border>
 
-        <!-- Banner POI đang active — đáy màn hình -->
+        <!-- FAB Stack — góc dưới phải -->
+        <VerticalStackLayout HorizontalOptions="End"
+                             VerticalOptions="End"
+                             Margin="16,0,16,108"
+                             Spacing="12">
+
+            <!-- Language FAB -->
+            <Button Text="🌐"
+                    Style="{StaticResource FabButton}"
+                    Clicked="OnLanguageClicked" />
+
+            <!-- QR FAB -->
+            <Button Text="📷"
+                    Style="{StaticResource FabButton}"
+                    Clicked="OnQrScanClicked" />
+        </VerticalStackLayout>
+
+        <!-- Active POI Bottom Card -->
         <Border x:Name="ActivePoiBanner"
+                Style="{StaticResource CardBorder}"
                 IsVisible="False"
-                BackgroundColor="White"
                 VerticalOptions="End"
                 HorizontalOptions="Fill"
-                Margin="12,0,12,72"
-                StrokeShape="RoundRectangle 12"
-                Padding="16,12">
-            <Grid ColumnDefinitions="*,Auto">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label x:Name="ActivePoiTitle"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="#212121" />
-                    <Label x:Name="ActivePoiDesc"
-                           FontSize="13"
-                           TextColor="#757575"
-                           MaxLines="2"
-                           LineBreakMode="TailTruncation" />
-                </VerticalStackLayout>
-                <Button Grid.Column="1"
-                        Text="Chi tiết"
-                        Clicked="OnPoiBannerDetailClicked"
-                        BackgroundColor="#1976D2"
-                        TextColor="White"
-                        CornerRadius="8"
-                        Padding="12,6"
-                        VerticalOptions="Center" />
+                Margin="12,0,12,80"
+                Padding="16,14">
+            <Grid RowDefinitions="Auto,Auto,Auto">
+
+                <!-- Row 0: Category chip + distance -->
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      Margin="0,0,0,6">
+                    <Border Grid.Column="0"
+                            Style="{StaticResource ChipBorder}"
+                            HorizontalOptions="Start">
+                        <Label x:Name="CategoryChipLabel"
+                               Text="📍 Ẩm thực"
+                               TextColor="{StaticResource Primary}"
+                               FontSize="12"
+                               FontAttributes="Bold" />
+                    </Border>
+                    <Label Grid.Column="1"
+                           x:Name="DistanceLabel"
+                           Text="50m"
+                           Style="{StaticResource CaptionLabel}"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Row 1: Title -->
+                <Label Grid.Row="1"
+                       x:Name="ActivePoiTitle"
+                       Style="{StaticResource TitleLabel}"
+                       FontSize="16"
+                       Margin="0,0,0,4" />
+
+                <!-- Row 2: Controls -->
+                <Grid Grid.Row="2"
+                      ColumnDefinitions="Auto,*,Auto"
+                      Margin="0,4,0,0">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                        <Label Text="★ 4.5"
+                               Style="{StaticResource CaptionLabel}"
+                               TextColor="{StaticResource Warning}" />
+                        <Label Text="·"
+                               Style="{StaticResource CaptionLabel}" />
+                        <Label x:Name="ActivePoiDesc"
+                               Style="{StaticResource CaptionLabel}"
+                               MaxLines="1"
+                               LineBreakMode="TailTruncation" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Grid.Column="2" Spacing="8">
+                        <Button x:Name="MiniPlayBtn"
+                                Text="▶"
+                                BackgroundColor="{StaticResource PrimaryContainer}"
+                                TextColor="{StaticResource Primary}"
+                                CornerRadius="20"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                FontSize="16"
+                                Padding="0"
+                                Clicked="OnMiniPlayClicked" />
+                        <Button Text="Chi tiết"
+                                Clicked="OnPoiBannerDetailClicked"
+                                Style="{StaticResource PrimaryButton}"
+                                Padding="14,8"
+                                MinimumHeightRequest="40"
+                                VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

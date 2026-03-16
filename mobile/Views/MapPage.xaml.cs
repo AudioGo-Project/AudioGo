@@ -99,6 +99,29 @@ public partial class MapPage : ContentPage
         await Shell.Current.GoToAsync(nameof(QrScanPage));
     }
 
+    private async void OnLanguageClicked(object? sender, EventArgs e)
+    {
+        var selected = await DisplayActionSheet(
+            "Chọn ngôn ngữ thuyết minh",
+            "Huỷ",
+            null,
+            "🇻🇳 Tiếng Việt",
+            "🇬🇧 English",
+            "🇨🇳 中文",
+            "🇰🇷 한국어",
+            "🇯🇵 日本語");
+        // TODO: pass selected language to AudioService
+    }
+
+    private void OnMiniPlayClicked(object? sender, EventArgs e)
+    {
+        if (_activePinPoiId is null) return;
+        // Toggle play/pause từ banner — delegate xuống MainViewModel
+        var poi = _main.ActivePoi;
+        if (poi is not null)
+            _ = _main.TriggerAudioAsync(poi);
+    }
+
     private async Task RequestInitialLocationAsync()
     {
         try

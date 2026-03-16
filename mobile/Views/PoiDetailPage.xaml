@@ -2,72 +2,283 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AudioGo_Mobile.Views.PoiDetailPage"
+             Shell.NavBarIsVisible="False"
              Title="{Binding Poi.Title, FallbackValue='Chi tiết điểm'}">
 
-    <ScrollView>
+    <ScrollView BackgroundColor="{StaticResource Background}">
         <VerticalStackLayout Spacing="0">
 
-            <!-- Logo / ảnh đại diện -->
-            <Image Source="{Binding Poi.LogoUrl}"
-                   HeightRequest="220"
-                   Aspect="AspectFill"
-                   IsVisible="{Binding Poi, Converter={StaticResource IsNotNullConverter}}" />
+            <!-- ══ Hero Image Block ══════════════════════════════════ -->
+            <Grid HeightRequest="280">
+                <!-- Hero image -->
+                <Image Source="{Binding Poi.LogoUrl}"
+                       HeightRequest="280"
+                       Aspect="AspectFill"
+                       IsVisible="{Binding Poi, Converter={StaticResource IsNotNullConverter}}" />
 
-            <!-- Nội dung chính -->
-            <VerticalStackLayout Padding="20" Spacing="12">
+                <!-- Dark gradient overlay bottom -->
+                <BoxView VerticalOptions="End"
+                         HeightRequest="120"
+                         Opacity="0.65">
+                    <BoxView.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="Transparent" Offset="0" />
+                            <GradientStop Color="#CC000000" Offset="1" />
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
 
-                <!-- Loading indicator -->
+                <!-- Navigation overlay row -->
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      VerticalOptions="Start"
+                      Margin="12,48,12,0"
+                      Padding="4">
+                    <!-- Back button -->
+                    <Border Grid.Column="0"
+                            BackgroundColor="#80FFFFFF"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 20"
+                            Padding="10,6"
+                            HorizontalOptions="Start">
+                        <Label Text="← Quay lại"
+                               FontSize="13"
+                               TextColor="{StaticResource TextPrimary}"
+                               GestureRecognizers=""/>
+                    </Border>
+
+                    <!-- Favourite button -->
+                    <Border Grid.Column="2"
+                            BackgroundColor="#80FFFFFF"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 20"
+                            Padding="10,6">
+                        <Label x:Name="FavIcon"
+                               Text="♡"
+                               FontSize="18"
+                               TextColor="{StaticResource Primary}" />
+                    </Border>
+                </Grid>
+
+                <!-- POI name overlay at bottom of hero -->
+                <VerticalStackLayout VerticalOptions="End"
+                                     Margin="16,0,16,12"
+                                     Spacing="2">
+                    <Label Text="{Binding Poi.Title}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="★ 4.5"
+                               FontSize="13"
+                               TextColor="#FFD700" />
+                        <Label Text="• 📍 Phố Vĩnh Khánh, Q.4"
+                               FontSize="13"
+                               TextColor="#CCffffff" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- ══ Language Tab Selector ═════════════════════════════ -->
+            <ScrollView Orientation="Horizontal"
+                        HorizontalScrollBarVisibility="Never"
+                        BackgroundColor="{StaticResource Surface}"
+                        Padding="12,10">
+                <HorizontalStackLayout Spacing="8" x:Name="LangTabLayout">
+                    <!-- Tabs generated in code-behind -->
+                    <Border x:Name="TabVI"
+                            BackgroundColor="{StaticResource Primary}"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16"
+                            Padding="16,7">
+                        <Label Text="🇻🇳 VI"
+                               TextColor="White"
+                               FontSize="13"
+                               FontAttributes="Bold" />
+                    </Border>
+                    <Border x:Name="TabEN"
+                            BackgroundColor="{StaticResource Gray100}"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16"
+                            Padding="16,7">
+                        <Label Text="🇬🇧 EN"
+                               TextColor="{StaticResource TextSecondary}"
+                               FontSize="13" />
+                    </Border>
+                    <Border x:Name="TabZH"
+                            BackgroundColor="{StaticResource Gray100}"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16"
+                            Padding="16,7">
+                        <Label Text="🇨🇳 ZH"
+                               TextColor="{StaticResource TextSecondary}"
+                               FontSize="13" />
+                    </Border>
+                    <Border x:Name="TabKO"
+                            BackgroundColor="{StaticResource Gray100}"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16"
+                            Padding="16,7">
+                        <Label Text="🇰🇷 KO"
+                               TextColor="{StaticResource TextSecondary}"
+                               FontSize="13" />
+                    </Border>
+                    <Border x:Name="TabJA"
+                            BackgroundColor="{StaticResource Gray100}"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 16"
+                            Padding="16,7">
+                        <Label Text="🇯🇵 JA"
+                               TextColor="{StaticResource TextSecondary}"
+                               FontSize="13" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- ══ Main Content Padding ════════════════════════════════ -->
+            <VerticalStackLayout Padding="16,12" Spacing="16">
+
+                <!-- Loading / Error -->
                 <ActivityIndicator IsRunning="{Binding IsLoading}"
                                    IsVisible="{Binding IsLoading}"
-                                   Color="#1976D2"
+                                   Color="{StaticResource Primary}"
                                    HorizontalOptions="Center" />
-
-                <!-- Thông báo lỗi -->
                 <Label Text="{Binding ErrorMessage}"
                        IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotEmptyConverter}}"
-                       TextColor="Red"
-                       HorizontalOptions="Center" />
+                       TextColor="{StaticResource Error}"
+                       HorizontalOptions="Center"
+                       FontSize="14" />
 
-                <!-- Tiêu đề -->
-                <Label Text="{Binding Poi.Title}"
-                       FontSize="22"
-                       FontAttributes="Bold"
-                       TextColor="#212121" />
-
-                <!-- Mô tả -->
+                <!-- Description -->
                 <Label Text="{Binding Poi.Description}"
-                       FontSize="15"
-                       TextColor="#757575"
-                       LineBreakMode="WordWrap" />
+                       Style="{StaticResource BodyLabel}"
+                       LineHeight="1.5" />
 
-                <!-- Điều khiển audio -->
-                <HorizontalStackLayout Spacing="12" HorizontalOptions="Center" Margin="0,8,0,0">
-                    <Button Text="▶  Phát thuyết minh"
-                            Clicked="OnPlayClicked"
-                            IsEnabled="{Binding IsPlaying, Converter={StaticResource InverseBoolConverter}}"
-                            BackgroundColor="#1976D2"
-                            TextColor="White"
-                            CornerRadius="24"
-                            Padding="20,10" />
+                <!-- ══ Audio Player Card ════════════════════════════ -->
+                <Border Style="{StaticResource AudioCard}"
+                        Margin="0,4">
+                    <VerticalStackLayout Spacing="16">
 
-                    <Button Text="■  Dừng"
-                            Clicked="OnStopClicked"
-                            IsEnabled="{Binding IsPlaying}"
-                            BackgroundColor="#E53935"
-                            TextColor="White"
-                            CornerRadius="24"
-                            Padding="20,10" />
+                        <!-- Label -->
+                        <Label Text="🎵 Thuyết minh âm thanh"
+                               Style="{StaticResource SectionTitle}"
+                               FontSize="15" />
+
+                        <!-- Waveform placeholder -->
+                        <Border BackgroundColor="{StaticResource Gray100}"
+                                Stroke="Transparent"
+                                StrokeShape="RoundRectangle 8"
+                                HeightRequest="48"
+                                Padding="0">
+                            <Label Text="〜〜〜〜〜〜〜〜〜〜〜〜〜〜〜"
+                                   TextColor="{StaticResource Primary}"
+                                   FontSize="16"
+                                   Opacity="0.5"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Progress Slider -->
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   x:Name="ElapsedLabel"
+                                   Text="0:00"
+                                   Style="{StaticResource CaptionLabel}"
+                                   VerticalOptions="Center" />
+                            <Slider Grid.Column="1"
+                                    x:Name="ProgressSlider"
+                                    Minimum="0"
+                                    Maximum="1"
+                                    Value="{Binding AudioProgress}"
+                                    MinimumTrackColor="{StaticResource Primary}"
+                                    ThumbColor="{StaticResource Primary}"
+                                    MaximumTrackColor="{StaticResource Gray200}"
+                                    VerticalOptions="Center" />
+                            <Label Grid.Column="2"
+                                   x:Name="DurationLabel"
+                                   Text="0:00"
+                                   Style="{StaticResource CaptionLabel}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- Playback Controls -->
+                        <HorizontalStackLayout HorizontalOptions="Center"
+                                               Spacing="20">
+                            <!-- Back 5s -->
+                            <Button Text="⏮"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource TextSecondary}"
+                                    FontSize="26"
+                                    WidthRequest="48"
+                                    HeightRequest="48"
+                                    Padding="0"
+                                    BorderWidth="0"
+                                    Clicked="OnSkipBackClicked" />
+
+                            <!-- Play / Pause -->
+                            <Button x:Name="PlayPauseBtn"
+                                    Text="▶"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    TextColor="White"
+                                    CornerRadius="30"
+                                    WidthRequest="60"
+                                    HeightRequest="60"
+                                    FontSize="24"
+                                    Padding="0">
+                                <Button.Shadow>
+                                    <Shadow Brush="{StaticResource Primary}" Offset="0,4" Radius="12" Opacity="0.35"/>
+                                </Button.Shadow>
+                                <Button.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnPlayPauseTapped" />
+                                </Button.GestureRecognizers>
+                            </Button>
+
+                            <!-- Forward 5s -->
+                            <Button Text="⏭"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource TextSecondary}"
+                                    FontSize="26"
+                                    WidthRequest="48"
+                                    HeightRequest="48"
+                                    Padding="0"
+                                    BorderWidth="0"
+                                    Clicked="OnSkipForwardClicked" />
+                        </HorizontalStackLayout>
+
+                        <!-- Volume control -->
+                        <HorizontalStackLayout Spacing="8" HorizontalOptions="Fill">
+                            <Label Text="🔈" FontSize="16" VerticalOptions="Center" />
+                            <Slider HorizontalOptions="FillAndExpand"
+                                    Minimum="0"
+                                    Maximum="1"
+                                    Value="0.8"
+                                    MinimumTrackColor="{StaticResource Gray400}"
+                                    ThumbColor="{StaticResource Gray500}"
+                                    MaximumTrackColor="{StaticResource Gray200}" />
+                            <Label Text="🔊" FontSize="16" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ══ Playing Status ═══════════════════════════════ -->
+                <HorizontalStackLayout HorizontalOptions="Center"
+                                       Spacing="6"
+                                       IsVisible="{Binding IsPlaying}">
+                    <ActivityIndicator IsRunning="True"
+                                       Color="{StaticResource Primary}"
+                                       WidthRequest="16"
+                                       HeightRequest="16" />
+                    <Label Text="Đang phát thuyết minh..."
+                           Style="{StaticResource PrimaryLabel}" />
                 </HorizontalStackLayout>
 
-                <!-- Trạng thái đang phát -->
-                <Label Text="Đang phát..."
-                       IsVisible="{Binding IsPlaying}"
-                       TextColor="#1976D2"
-                       HorizontalOptions="Center"
-                       FontSize="13" />
+                <!-- Stop button (when playing) -->
+                <Button Text="■  Dừng phát"
+                        IsVisible="{Binding IsPlaying}"
+                        Style="{StaticResource OutlineButton}"
+                        Clicked="OnStopClicked"
+                        HorizontalOptions="Center" />
 
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

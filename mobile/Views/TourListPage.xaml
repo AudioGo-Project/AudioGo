@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AudioGo_Mobile.Views.TourListPage"
+             Shell.NavBarIsVisible="True"
+             Title="Các Tour nổi bật">
+
+    <ScrollView BackgroundColor="{StaticResource Background}">
+        <VerticalStackLayout Spacing="16" Padding="16">
+
+            <!-- Search / Filter -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource Surface}"
+                        Style="{StaticResource CardBorder}"
+                        Padding="12,4">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Grid.Column="0" Text="🔍" VerticalOptions="Center" FontSize="16" TextColor="{StaticResource TextSecondary}" />
+                        <Entry Grid.Column="1" 
+                               Placeholder="Tìm kiếm tour..." 
+                               PlaceholderColor="{StaticResource TextTertiary}" 
+                               BackgroundColor="Transparent"
+                               TextColor="{StaticResource TextPrimary}" />
+                    </Grid>
+                </Border>
+                <Button Grid.Column="1" 
+                        Text="Lọc" 
+                        Style="{StaticResource OutlineButton}" 
+                        Padding="16,8" 
+                        MinimumHeightRequest="48"
+                        VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Filters horizontal list -->
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8">
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Primary}">
+                        <Label Text="Tất cả" TextColor="White" FontAttributes="Bold" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="Di tích lịch sử" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="Văn hóa" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="Ẩm thực" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <Label Text="Có 12 tour quanh bạn" Style="{StaticResource BodyLabel}" Margin="0,8,0,0" />
+
+            <!-- Tour List (Mock Data) -->
+            <VerticalStackLayout Spacing="16">
+                <!-- Tour 1 -->
+                <Border Style="{StaticResource CardBorder}" Padding="0">
+                    <VerticalStackLayout>
+                        <Grid HeightRequest="160">
+                            <Image Source="tour_mock1.jpg" Aspect="AspectFill" BackgroundColor="{StaticResource Gray200}" />
+                            <Border Style="{StaticResource ChipBorder}" 
+                                    HorizontalOptions="Start" VerticalOptions="Start" 
+                                    Margin="12" BackgroundColor="{StaticResource Warning}">
+                                <Label Text="★ Ưa chuộng" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                            </Border>
+                        </Grid>
+                        <VerticalStackLayout Padding="16" Spacing="8">
+                            <Label Text="Hành Trình Bọc Thép Dinh Độc Lập" Style="{StaticResource TitleLabel}" />
+                            <Label Text="Khám phá chứng nhân lịch sử qua góc nhìn mới với 15 điểm phát tự động." 
+                                   Style="{StaticResource BodyLabel}" />
+                            
+                            <!-- Metadata -->
+                            <Grid ColumnDefinitions="Auto, Auto, *" Margin="0,8,0,0">
+                                <Label Grid.Column="0" Text="🕒 2 giờ" Style="{StaticResource CaptionLabel}" Margin="0,0,16,0" />
+                                <Label Grid.Column="1" Text="📍 15 điểm" Style="{StaticResource CaptionLabel}" />
+                                <Label Grid.Column="2" Text="Miễn phí" TextColor="{StaticResource Primary}" FontAttributes="Bold" HorizontalOptions="End" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Tour 2 -->
+                <Border Style="{StaticResource CardBorder}" Padding="0">
+                    <VerticalStackLayout>
+                        <Grid HeightRequest="160">
+                            <Image Source="tour_mock2.jpg" Aspect="AspectFill" BackgroundColor="{StaticResource Gray200}" />
+                            <Border Style="{StaticResource ChipBorder}" 
+                                    HorizontalOptions="Start" VerticalOptions="Start" 
+                                    Margin="12" BackgroundColor="{StaticResource Primary}">
+                                <Label Text="Mới" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                            </Border>
+                        </Grid>
+                        <VerticalStackLayout Padding="16" Spacing="8">
+                            <Label Text="Chuyện Kể Chợ Bến Thành" Style="{StaticResource TitleLabel}" />
+                            <Label Text="Giao thương, văn hóa và ẩm thực Sài Gòn từ những năm 1900 tới nay." 
+                                   Style="{StaticResource BodyLabel}" />
+                            
+                            <!-- Metadata -->
+                            <Grid ColumnDefinitions="Auto, Auto, *" Margin="0,8,0,0">
+                                <Label Grid.Column="0" Text="🕒 1.5 giờ" Style="{StaticResource CaptionLabel}" Margin="0,0,16,0" />
+                                <Label Grid.Column="1" Text="📍 8 điểm" Style="{StaticResource CaptionLabel}" />
+                                <Label Grid.Column="2" Text="99,000đ" TextColor="{StaticResource TextSecondary}" FontAttributes="Bold" HorizontalOptions="End" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
