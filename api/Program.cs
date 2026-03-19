@@ -1,4 +1,5 @@
 using System.Text;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +7,12 @@ using Server.Data;
 using Server.Repositories;
 using Server.Repositories.Interfaces;
 using Server.Services;
+using Server.Services.Interfaces;
+
+// ── Load .env TRƯỚC CreateBuilder (CreateBuilder snapshot env vars ngay lúc khởi tạo) ──
+var envFile = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (File.Exists(envFile))
+    DotNetEnv.Env.Load(envFile);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +55,10 @@ builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<IListenHistoryRepository, ListenHistoryRepository>();
 builder.Services.AddScoped<ILocationLogRepository, LocationLogRepository>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
+builder.Services.AddSingleton<ITranslationService, TranslationService>();
+builder.Services.AddSingleton<ITtsService, TtsService>();
+builder.Services.AddScoped<IContentPipelineService, ContentPipelineService>();
 
 // ── Controllers & OpenAPI ─────────────────────────────────────────────
 builder.Services.AddControllers();

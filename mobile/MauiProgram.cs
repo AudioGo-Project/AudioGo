@@ -4,6 +4,7 @@ using AudioGo.Services.Interfaces;
 using AudioGo.ViewModels;
 using AudioGo_Mobile.Views;
 using Microsoft.Extensions.Logging;
+using Plugin.Maui.Audio;
 using ZXing.Net.Maui.Controls;
 
 namespace AudioGo_Mobile;
@@ -36,6 +37,7 @@ public static class MauiProgram
         });
 
         // ── Services ──────────────────────────────────────────────
+        builder.Services.AddSingleton(AudioManager.Current);
         builder.Services.AddSingleton<SyncService>();
         builder.Services.AddSingleton<IGeofenceService, GeofenceService>();
         builder.Services.AddSingleton<IAudioService, AudioService>();

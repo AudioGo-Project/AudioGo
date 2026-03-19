@@ -27,6 +27,15 @@ namespace Server.Data
             modelBuilder.Entity<TourPoi>()
                 .HasKey(tp => new { tp.TourId, tp.PoiId });
 
+            // EF convention yêu cầu PK tên là "Id" hoặc "{ClassName}Id"
+            // HistoryId / LocationId không khớp → phải khai báo tường minh
+            modelBuilder.Entity<ListenHistory>()
+                .HasKey(lh => lh.HistoryId);
+
+            modelBuilder.Entity<LocationLog>()
+                .HasKey(ll => ll.LocationId);
+
+
             // ── Relationships ─────────────────────────────────────────
             modelBuilder.Entity<Poi>()
                 .HasOne<Account>()

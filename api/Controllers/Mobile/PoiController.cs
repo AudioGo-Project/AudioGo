@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.Models;
 using Server.Repositories.Interfaces;
+using Server.Services.Interfaces;
 using Shared;
 
 namespace Server.Controllers.Mobile
@@ -10,13 +11,25 @@ namespace Server.Controllers.Mobile
     public class PoiController : ControllerBase
     {
         private readonly IPoiRepository _repo;
-        public PoiController(IPoiRepository repo) => _repo = repo;
+        private readonly IContentPipelineService _pipeline;
+
+        public PoiController(IPoiRepository repo, IContentPipelineService pipeline)
+        {
+            _repo = repo;
+            _pipeline = pipeline;
+        }
 
         // GET /api/mobile/pois
         [HttpGet]
         public async Task<ActionResult<IEnumerable<POI>>> GetAll(
-            [FromQuery] string lang = "vi") =>
-            Ok((await _repo.GetAllAsync()).Select(p => ToDto(p, lang)));
+            [FromQuery] string lang = "vi")
+        {
+            var pois = await _repo.GetAllAsync();
+            var dtos = new List<POI>();
+            foreach (var p in pois)
+                dtos.Add(await ToDtoAsync(p, lang));
+            return Ok(dtos);
+        }
 
         // GET /api/mobile/pois/nearby?lat=10.72&lon=106.70&radius=500
         [HttpGet("nearby")]
@@ -25,7 +38,10 @@ namespace Server.Controllers.Mobile
             [FromQuery] double radius = 500, [FromQuery] string lang = "vi")
         {
             var pois = await _repo.GetNearbyAsync(lat, lon, radius);
-            return Ok(pois.Select(p => ToDto(p, lang)));
+            var dtos = new List<POI>();
+            foreach (var p in pois)
+                dtos.Add(await ToDtoAsync(p, lang));
+            return Ok(dtos);
         }
 
         // GET /api/mobile/pois/{poiId}
@@ -34,14 +50,12 @@ namespace Server.Controllers.Mobile
             string poiId, [FromQuery] string lang = "vi")
         {
             var poi = await _repo.GetByIdAsync(poiId);
-            return poi is null ? NotFound() : Ok(ToDto(poi, lang));
+            return poi is null ? NotFound() : Ok(await ToDtoAsync(poi, lang));
         }
 
-        private static POI ToDto(Poi p, string lang)
+        private async Task<POI> ToDtoAsync(Poi p, string lang)
         {
-            var content = p.Contents.FirstOrDefault(c => c.LanguageCode == lang)
-                       ?? p.Contents.FirstOrDefault(c => c.IsMaster)
-                       ?? p.Contents.FirstOrDefault();
+            var content = await _pipeline.EnsureContentAsync(p, lang);
             return new()
             {
                 PoiId            = p.PoiId,
@@ -51,10 +65,10 @@ namespace Server.Controllers.Mobile
                 Priority         = p.Priority,
                 Status           = p.Status   ?? string.Empty,
                 LogoUrl          = p.LogoUrl  ?? string.Empty,
-                LanguageCode     = content?.LanguageCode ?? lang,
-                Title            = content?.Title        ?? string.Empty,
-                Description      = content?.Description  ?? string.Empty,
-                AudioUrl         = content?.AudioUrl     ?? string.Empty,
+                LanguageCode     = content.LanguageCode,
+                Title            = content.Title,
+                Description      = content.Description,
+                AudioUrl         = content.AudioUrl,
             };
         }
     }
