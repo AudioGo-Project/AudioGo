@@ -101,7 +101,7 @@ public partial class MapPage : ContentPage
 
     private async void OnLanguageClicked(object? sender, EventArgs e)
     {
-        var selected = await DisplayActionSheet(
+        var selected = await DisplayActionSheetAsync(
             "Chọn ngôn ngữ thuyết minh",
             "Huỷ",
             null,
@@ -110,7 +110,34 @@ public partial class MapPage : ContentPage
             "🇨🇳 中文",
             "🇰🇷 한국어",
             "🇯🇵 日本語");
-        // TODO: pass selected language to AudioService
+
+        var lang = selected switch
+        {
+            "🇻🇳 Tiếng Việt" => "vi",
+            "🇬🇧 English"    => "en",
+            "🇨🇳 中文"        => "zh-Hans",
+            "🇰🇷 한국어"       => "ko",
+            "🇯🇵 日本語"       => "ja",
+            _ => null
+        };
+
+        if (lang is not null)
+        {
+            _main.CurrentLanguage = lang;
+            // Pins sẽ refresh sau khi ReloadPoisAsync hoàn tất
+            _main.PropertyChanged += OnPoisReloaded;
+        }
+    }
+
+    private void OnPoisReloaded(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(MainViewModel.Pois)) return;
+        _main.PropertyChanged -= OnPoisReloaded;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _vm.LoadPois(_main.Pois);
+            RefreshPins();
+        });
     }
 
     private void OnMiniPlayClicked(object? sender, EventArgs e)

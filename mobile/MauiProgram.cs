@@ -47,13 +47,19 @@ public static class MauiProgram
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<MapViewModel>();
         builder.Services.AddTransient<PoiDetailViewModel>();
+        builder.Services.AddTransient<TourListViewModel>();
+        builder.Services.AddTransient<SearchViewModel>();
+        builder.Services.AddTransient<CreateTourViewModel>();
 
         // ── Views ─────────────────────────────────────────────────
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<MapPage>();
-        builder.Services.AddSingleton<TourListPage>();
+        builder.Services.AddTransient<TourListPage>();
         builder.Services.AddTransient<PoiDetailPage>();
         builder.Services.AddTransient<QrScanPage>();
+        builder.Services.AddTransient<SearchPage>();
+        builder.Services.AddTransient<CreateTourPage>();
+        builder.Services.AddTransient<TourDetailPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

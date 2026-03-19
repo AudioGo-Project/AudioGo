@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AudioGo_Mobile.Views.TourDetailPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource Background}"
+             Title="Chi tiết Tour">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ── Header ── -->
+        <Grid Grid.Row="0" HeightRequest="200">
+            <Image Source="{Binding ThumbnailUrl}"
+                   Aspect="AspectFill"
+                   BackgroundColor="{StaticResource Gray200}" />
+            <BoxView BackgroundColor="#70000000" />
+            <!-- Gradient bottom -->
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="Transparent" Offset="0.4"/>
+                        <GradientStop Color="#D0000000" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+
+            <!-- Back button -->
+            <Border HorizontalOptions="Start" VerticalOptions="Start"
+                    Margin="16,48,0,0"
+                    BackgroundColor="#59FFFFFF"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0"
+                    Padding="10,8">
+                <Label Text="← Quay lại" TextColor="White" FontSize="14"/>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackClicked"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Tour title overlay bottom -->
+            <VerticalStackLayout VerticalOptions="End" Padding="16,0,16,14" Spacing="4">
+                <Label Text="{Binding TourName}"
+                       TextColor="White"
+                       FontSize="20"
+                       FontAttributes="Bold" />
+                <HorizontalStackLayout Spacing="12">
+                    <Label Text="{Binding PoiCountLabel}"
+                           TextColor="#E0E0E0"
+                           FontSize="13" />
+                    <Label Text="{Binding DurationLabel}"
+                           TextColor="#E0E0E0"
+                           FontSize="13" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- ── Progress bar ── -->
+        <Border Grid.Row="0" VerticalOptions="End"
+                HeightRequest="4"
+                StrokeThickness="0"
+                BackgroundColor="{StaticResource Gray200}"
+                Margin="0">
+            <BoxView BackgroundColor="{StaticResource Primary}"
+                     HorizontalOptions="Start"
+                     WidthRequest="{Binding ProgressWidth}" />
+        </Border>
+
+        <!-- ── Timeline POI list ── -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,16" Spacing="0">
+                <Label Text="Hành trình các điểm" Style="{StaticResource SectionTitle}"
+                       Margin="0,0,0,16"/>
+
+                <CollectionView ItemsSource="{Binding Steps}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="48,*" RowDefinitions="Auto"
+                                  ColumnSpacing="12" Margin="0,0,0,4">
+
+                                <!-- Step indicator -->
+                                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                    <!-- Circle icon -->
+                                    <Border WidthRequest="36" HeightRequest="36"
+                                            StrokeShape="RoundRectangle 18"
+                                            StrokeThickness="0"
+                                            BackgroundColor="{Binding StepColor}"
+                                            HorizontalOptions="Center">
+                                        <Label Text="{Binding StepIcon}"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               FontSize="14" />
+                                    </Border>
+                                    <!-- Connector line -->
+                                    <BoxView WidthRequest="2"
+                                             HeightRequest="32"
+                                             BackgroundColor="{StaticResource Gray200}"
+                                             HorizontalOptions="Center"
+                                             IsVisible="{Binding IsNotLast}" />
+                                </VerticalStackLayout>
+
+                                <!-- POI card -->
+                                <Border Grid.Column="1"
+                                        Style="{StaticResource CardBorder}"
+                                        Padding="12"
+                                        Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                        <!-- Category badge -->
+                                        <Border Grid.Row="0" Grid.Column="0"
+                                                BackgroundColor="{StaticResource PrimaryContainer}"
+                                                StrokeShape="RoundRectangle 6"
+                                                StrokeThickness="0"
+                                                Padding="6,2"
+                                                HorizontalOptions="Start"
+                                                Margin="0,0,0,4">
+                                            <Label Text="{Binding CategoryLabel}"
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"/>
+                                        </Border>
+                                        <Label Grid.Row="1" Grid.Column="0"
+                                               Text="{Binding Title}"
+                                               Style="{StaticResource TitleLabel}"
+                                               FontSize="15" />
+                                        <Label Grid.Row="2" Grid.Column="0"
+                                               Text="{Binding Description}"
+                                               Style="{StaticResource BodyLabel}"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="2" />
+                                        <!-- Play button (hiển thị khi IsCurrent) -->
+                                        <Border Grid.RowSpan="3" Grid.Column="1"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                StrokeShape="RoundRectangle 10"
+                                                StrokeThickness="0"
+                                                Padding="10,8"
+                                                VerticalOptions="Center"
+                                                IsVisible="{Binding IsCurrent}">
+                                            <Label Text="▶" TextColor="White" FontSize="16"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ── Mini Player ── -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource Surface}"
+                StrokeThickness="0"
+                Padding="16,12">
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.08" Offset="0,-2" Radius="12" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource Primary}"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0"
+                        WidthRequest="44" HeightRequest="44">
+                    <Label Text="🔊" HorizontalOptions="Center" VerticalOptions="Center"
+                           FontSize="18"/>
+                </Border>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="{Binding CurrentStepTitle}"
+                           Style="{StaticResource TitleLabel}"
+                           FontSize="14"
+                           LineBreakMode="TailTruncation"/>
+                    <Label Text="Đang phát · Giọng Nữ"
+                           Style="{StaticResource CaptionLabel}"/>
+                </VerticalStackLayout>
+                <Border Grid.Column="2"
+                        BackgroundColor="{StaticResource Surface}"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="1"
+                        Stroke="{StaticResource Gray200}"
+                        Padding="10,8">
+                    <Label Text="⏮" FontSize="16"/>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PrevStepCommand}"/>
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border Grid.Column="3"
+                        BackgroundColor="{StaticResource Primary}"
+                        StrokeShape="RoundRectangle 8"
+                        StrokeThickness="0"
+                        Padding="10,8">
+                    <Label Text="{Binding PlayPauseIcon}" TextColor="White" FontSize="16"/>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PlayPauseCommand}"/>
+                    </Border.GestureRecognizers>
+                </Border>
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

@@ -9,115 +9,207 @@
     <ScrollView BackgroundColor="{StaticResource Background}">
         <VerticalStackLayout Spacing="0" Padding="0,0,0,40">
 
-            <!-- ══ Header Section (Hero) ════════════════════════════ -->
-            <Grid HeightRequest="240" Margin="0">
-                <Image Source="hero_bg.jpg" 
-                       Aspect="AspectFill"
-                       Opacity="0.8" />
+            <!-- ══ Hero Header — ảnh Vĩnh Khánh + overlay ════════════════ -->
+            <Grid HeightRequest="260" Margin="0">
+                <!-- Ảnh nền thực tế (đã thêm vào Resources/Images/) -->
+                <Image Source="hero_bg.jpg"
+                       Aspect="AspectFill" />
+
+                <!-- Overlay đen 35% — làm nổi text trắng -->
+                <BoxView BackgroundColor="#59000000" />
+
+                <!-- Gradient từ dưới lên -->
                 <BoxView>
                     <BoxView.Background>
-                        <RadialGradientBrush Center="0.5,0.5" Radius="1.5">
-                            <GradientStop Color="#40f0427c" Offset="0" />
-                            <GradientStop Color="{StaticResource Background}" Offset="1" />
-                        </RadialGradientBrush>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="Transparent" Offset="0.3" />
+                            <GradientStop Color="#CF000000" Offset="1.0" />
+                        </LinearGradientBrush>
                     </BoxView.Background>
                 </BoxView>
 
-                <!-- Top Bar (Greeting & Profile) -->
-                <Grid ColumnDefinitions="*,Auto" 
-                      RowDefinitions="Auto"
-                      VerticalOptions="Start" 
-                      Margin="16,48,16,0">
-                    <VerticalStackLayout Grid.Column="0">
-                        <Label Text="Chào bạn 👋" 
-                               Style="{StaticResource SubHeadline}" 
-                               HorizontalOptions="Start" />
-                        <Label Text="Khám phá qua từng bước chân" 
-                               Style="{StaticResource TitleLabel}" 
-                               FontSize="22" />
+                <!-- Top bar -->
+                <Grid ColumnDefinitions="*,Auto"
+                      VerticalOptions="Start"
+                      Margin="20,52,20,0">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="📍 Khu phố Vĩnh Khánh"
+                               TextColor="#E0E0E0"
+                               FontSize="13" />
+                        <Label Text="Khám phá Vĩnh Khánh"
+                               TextColor="White"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               FontFamily="InterBold" />
                     </VerticalStackLayout>
-                    <Border Grid.Column="1" 
-                            WidthRequest="48" 
-                            HeightRequest="48"
-                            StrokeShape="RoundRectangle 24"
-                            StrokeThickness="0">
-                        <Image Source="profile_placeholder.png" Aspect="AspectFill" BackgroundColor="{StaticResource Gray200}" />
+                    <!-- QR scan button -->
+                    <Border Grid.Column="1"
+                            BackgroundColor="#59FFFFFF"
+                            StrokeShape="RoundRectangle 12"
+                            StrokeThickness="0"
+                            Padding="10"
+                            WidthRequest="44"
+                            HeightRequest="44"
+                            VerticalOptions="Start">
+                        <Label Text="⊡" FontSize="20" TextColor="White"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding QrScanCommand}" />
+                        </Border.GestureRecognizers>
                     </Border>
                 </Grid>
 
-                <!-- Search box over hero -->
+                <!-- Search box nổi trên bottom -->
                 <Border BackgroundColor="{StaticResource Surface}"
                         Style="{StaticResource CardBorder}"
                         Margin="16,0,16,16"
                         VerticalOptions="End"
                         Padding="16,4">
                     <Grid ColumnDefinitions="Auto,*">
-                        <Label Grid.Column="0" Text="🔍" VerticalOptions="Center" FontSize="18" TextColor="{StaticResource TextSecondary}" />
-                        <Entry Grid.Column="1" 
-                               Placeholder="Tìm kiếm..." 
-                               PlaceholderColor="{StaticResource TextTertiary}" 
+                        <Label Grid.Column="0" Text="🔍" VerticalOptions="Center"
+                               FontSize="18" TextColor="{StaticResource TextSecondary}" />
+                        <Entry Grid.Column="1"
+                               Placeholder="Tìm điểm ăn, quán, địa điểm..."
+                               PlaceholderColor="{StaticResource TextTertiary}"
                                BackgroundColor="Transparent"
-                               TextColor="{StaticResource TextPrimary}" />
+                               TextColor="{StaticResource TextPrimary}"
+                               ReturnCommand="{Binding SearchCommand}" />
                     </Grid>
                 </Border>
             </Grid>
 
-            <!-- ══ Start GPS Monitoring Banner (Nếu cần) ════════════ -->
-            <Border Style="{StaticResource CardBorder}" 
-                    Margin="16,16,16,0" 
+            <!-- ══ Voice Toggle — Giọng Nữ / Giọng Nam ══════════════════ -->
+            <Grid ColumnDefinitions="*,*" Margin="16,16,16,0" ColumnSpacing="8">
+                <!-- Giọng Nữ -->
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource Primary}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0"
+                        Padding="0,10">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                        <Label Text="♀" FontSize="18" TextColor="White" HorizontalOptions="Center"/>
+                        <Label Text="Giọng Nữ" FontSize="13" FontAttributes="Bold"
+                               TextColor="White" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetVoiceCommand}" CommandParameter="female"/>
+                    </Border.GestureRecognizers>
+                </Border>
+                <!-- Giọng Nam -->
+                <Border Grid.Column="1"
+                        BackgroundColor="{StaticResource Surface}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="1.5"
+                        Stroke="{StaticResource Gray200}"
+                        Padding="0,10">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                        <Label Text="♂" FontSize="18" TextColor="{StaticResource TextSecondary}"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Giọng Nam" FontSize="13"
+                               TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SetVoiceCommand}" CommandParameter="male"/>
+                    </Border.GestureRecognizers>
+                </Border>
+            </Grid>
+
+            <!-- ══ Category chips — Chủ yếu đồ ăn ════════════════════════ -->
+            <ScrollView Orientation="Horizontal"
+                        HorizontalScrollBarVisibility="Never"
+                        Margin="0,16,0,0">
+                <HorizontalStackLayout Spacing="8" Padding="16,0">
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Primary}">
+                        <Label Text="🍽️ Tất cả" TextColor="White" FontAttributes="Bold" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="🦐 Hải sản" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="🍜 Bún bò" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="🍢 Ốc" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="☕ Quán cà phê" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                    <Border Style="{StaticResource ChipBorder}" BackgroundColor="{StaticResource Surface}">
+                        <Label Text="🏛️ Di tích" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- ══ Status Banner ═══════════════════════════════════════════ -->
+            <Border Style="{StaticResource CardBorder}"
+                    Margin="16,16,16,0"
                     BackgroundColor="{StaticResource PrimaryContainer}">
                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                    <Label Grid.Row="0" Grid.Column="0" Text="Khởi động audio tour" Style="{StaticResource SectionTitle}" />
-                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding StatusMessage}" Style="{StaticResource BodyLabel}" />
-                    <Button Grid.RowSpan="2" Grid.Column="1" 
-                            Text="Bắt đầu" 
-                            Style="{StaticResource PrimaryButton}" 
+                    <Label Grid.Row="0" Grid.Column="0"
+                           Text="Bắt đầu khám phá Vĩnh Khánh"
+                           Style="{StaticResource SectionTitle}" />
+                    <Label Grid.Row="1" Grid.Column="0"
+                           Text="{Binding StatusMessage}"
+                           Style="{StaticResource BodyLabel}" />
+                    <Button Grid.RowSpan="2" Grid.Column="1"
+                            Text="Bắt đầu"
+                            Style="{StaticResource PrimaryButton}"
                             HeightRequest="40" Padding="16,8"
                             Command="{Binding InitCommand}" />
                 </Grid>
             </Border>
 
-            <!-- ══ Điểm đến lân cận (Horizontal List of POIs) ═══════ -->
+            <!-- ══ Điểm đến lân cận ════════════════════════════════════════ -->
             <VerticalStackLayout Margin="0,24,0,0">
                 <Grid ColumnDefinitions="*,Auto" Margin="16,0,16,12">
-                    <Label Grid.Column="0" Text="Điểm đến lân cận" Style="{StaticResource SectionTitle}" />
-                    <Label Grid.Column="1" Text="Xem tất cả" Style="{StaticResource PrimaryLabel}" />
+                    <Label Grid.Column="0" Text="Điểm nổi bật gần bạn"
+                           Style="{StaticResource SectionTitle}" />
+                    <Label Grid.Column="1" Text="Xem tất cả"
+                           Style="{StaticResource PrimaryLabel}" />
                 </Grid>
 
-                <!-- Loading state -->
-                <ActivityIndicator IsRunning="{Binding IsLoading}" 
-                                   IsVisible="{Binding IsLoading}" 
-                                   Color="{StaticResource Primary}" 
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   IsVisible="{Binding IsLoading}"
+                                   Color="{StaticResource Primary}"
                                    Margin="16" />
 
-                <!-- Binding đến Pois của MainViewModel -->
-                <CollectionView ItemsSource="{Binding Pois}" 
+                <CollectionView ItemsSource="{Binding Pois}"
                                 HorizontalScrollBarVisibility="Never"
                                 ItemsLayout="HorizontalList">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:POI">
-                            <Border Style="{StaticResource CardBorder}" 
+                        <DataTemplate>
+                            <Border Style="{StaticResource CardBorder}"
                                     WidthRequest="160"
                                     Margin="8,4"
                                     Padding="0">
                                 <VerticalStackLayout Spacing="0">
-                                    <Image Source="{Binding LogoUrl}" 
-                                           HeightRequest="120" 
-                                           Aspect="AspectFill" 
+                                    <Image Source="{Binding LogoUrl}"
+                                           HeightRequest="110"
+                                           Aspect="AspectFill"
                                            BackgroundColor="{StaticResource Gray100}" />
-                                    <VerticalStackLayout Padding="12" Spacing="4">
-                                        <Label Text="{Binding Title}" 
-                                               Style="{StaticResource TitleLabel}" 
-                                               FontSize="15" 
+                                    <VerticalStackLayout Padding="10" Spacing="4">
+                                        <!-- Category badge -->
+                                        <Border BackgroundColor="{StaticResource PrimaryContainer}"
+                                                StrokeShape="RoundRectangle 6"
+                                                StrokeThickness="0"
+                                                Padding="6,2"
+                                                HorizontalOptions="Start"
+                                                IsVisible="{Binding Categories.Count, Converter={StaticResource IntToBoolConverter}}">
+                                            <Label Text="{Binding Categories[0]}"
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontSize="10" FontAttributes="Bold" />
+                                        </Border>
+                                        <Label Text="{Binding Title}"
+                                               Style="{StaticResource TitleLabel}"
+                                               FontSize="14"
                                                LineBreakMode="TailTruncation" />
-                                        <Label Text="📍 Cách đây 500m" 
+                                        <Label Text="📍 Khu phố Vĩnh Khánh"
                                                Style="{StaticResource CaptionLabel}" />
                                     </VerticalStackLayout>
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
-                    <!-- Header Margin -->
                     <CollectionView.Header>
                         <ContentView WidthRequest="8" />
                     </CollectionView.Header>
@@ -127,36 +219,50 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-            <!-- ══ Tour gợi ý (Vertical List) - Dữ liệu Mock ════════ -->
+            <!-- ══ Tour nổi bật ════════════════════════════════════════════ -->
             <VerticalStackLayout Margin="16,24,16,0" Spacing="16">
-                <Label Text="Tour khám phá phổ biến" Style="{StaticResource SectionTitle}" />
+                <Label Text="Tour ẩm thực phổ biến" Style="{StaticResource SectionTitle}" />
 
-                <!-- Tour 1 -->
                 <Border Style="{StaticResource CardBorder}" Padding="0">
-                    <Grid HeightRequest="140">
-                        <Image Source="tour_mock1.jpg" Aspect="AspectFill" BackgroundColor="{StaticResource Gray200}" />
+                    <Grid HeightRequest="150">
+                        <Image Source="tour_mock1.jpg" Aspect="AspectFill"
+                               BackgroundColor="{StaticResource Gray200}" />
                         <BoxView BackgroundColor="#80000000" />
                         <VerticalStackLayout VerticalOptions="End" Padding="16" Spacing="4">
-                            <Border Style="{StaticResource ChipBorder}" HorizontalOptions="Start" BackgroundColor="{StaticResource Primary}">
-                                <Label Text="★ Bán chạy" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                            <Border Style="{StaticResource ChipBorder}"
+                                    HorizontalOptions="Start"
+                                    BackgroundColor="{StaticResource Primary}">
+                                <Label Text="🦐 Hải sản" TextColor="White"
+                                       FontSize="11" FontAttributes="Bold" />
                             </Border>
-                            <Label Text="Khám Phá Phố Cổ Hà Nội" Style="{StaticResource TitleLabel}" TextColor="White" />
-                            <Label Text="2 giờ • 15 điểm phát audio" Style="{StaticResource CaptionLabel}" TextColor="#E0E0E0" />
+                            <Label Text="Tour Vĩnh Khánh Ẩm Thực"
+                                   Style="{StaticResource TitleLabel}"
+                                   TextColor="White" />
+                            <Label Text="1.5 giờ • 8 điểm phát audio"
+                                   Style="{StaticResource CaptionLabel}"
+                                   TextColor="#E0E0E0" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
 
-                <!-- Tour 2 -->
                 <Border Style="{StaticResource CardBorder}" Padding="0">
-                    <Grid HeightRequest="140">
-                        <Image Source="tour_mock2.jpg" Aspect="AspectFill" BackgroundColor="{StaticResource Gray200}" />
+                    <Grid HeightRequest="150">
+                        <Image Source="tour_mock2.jpg" Aspect="AspectFill"
+                               BackgroundColor="{StaticResource Gray200}" />
                         <BoxView BackgroundColor="#80000000" />
                         <VerticalStackLayout VerticalOptions="End" Padding="16" Spacing="4">
-                            <Border Style="{StaticResource ChipBorder}" HorizontalOptions="Start" BackgroundColor="{StaticResource Warning}">
-                                <Label Text="🔥 Hấp dẫn" TextColor="White" FontSize="11" FontAttributes="Bold" />
+                            <Border Style="{StaticResource ChipBorder}"
+                                    HorizontalOptions="Start"
+                                    BackgroundColor="{StaticResource Warning}">
+                                <Label Text="🏛️ Lịch sử" TextColor="White"
+                                       FontSize="11" FontAttributes="Bold" />
                             </Border>
-                            <Label Text="Sài Gòn Xưa và Nay" Style="{StaticResource TitleLabel}" TextColor="White" />
-                            <Label Text="3 giờ • 24 điểm phát audio" Style="{StaticResource CaptionLabel}" TextColor="#E0E0E0" />
+                            <Label Text="Vĩnh Khánh — Ký Ức Phố Cảng"
+                                   Style="{StaticResource TitleLabel}"
+                                   TextColor="White" />
+                            <Label Text="2 giờ • 12 điểm phát audio"
+                                   Style="{StaticResource CaptionLabel}"
+                                   TextColor="#E0E0E0" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>

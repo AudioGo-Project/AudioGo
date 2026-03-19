@@ -88,7 +88,7 @@ namespace AudioGo.Services
 
         public Task PlayFileAsync(string urlOrPath)
         {
-            Enqueue(async ct =>
+            return Enqueue(async ct =>
             {
                 IsPlaying = true;
                 try
@@ -113,7 +113,6 @@ namespace AudioGo.Services
                     IsPlaying = false;
                 }
             });
-            return Task.CompletedTask;
         }
 
         private async Task PlayStreamAsync(Stream stream, CancellationToken ct)
@@ -146,11 +145,22 @@ namespace AudioGo.Services
             }
         }
 
-        private void Enqueue(Func<CancellationToken, Task> action)
+        private Task Enqueue(Func<CancellationToken, Task> action)
         {
-            _queue.Enqueue(action);
+            var tcs = new TaskCompletionSource();
+            _queue.Enqueue(async ct =>
+            {
+                try
+                {
+                    await action(ct);
+                    tcs.TrySetResult();
+                }
+                catch (OperationCanceledException) { tcs.TrySetCanceled(); }
+                catch (Exception ex) { tcs.TrySetException(ex); }
+            });
             if (!_isProcessing)
                 _ = ProcessQueueAsync();
+            return tcs.Task;
         }
 
         private async Task ProcessQueueAsync()

@@ -1,3 +1,4 @@
+using AudioGo.Helpers;
 using AudioGo.Services;
 using AudioGo.Services.Interfaces;
 using AudioGo.ViewModels;
@@ -41,6 +42,17 @@ namespace AudioGo.ViewModels
             private set { SetProperty(ref _statusMessage, value); }
         }
 
+        private string _currentLanguage = LanguageHelper.GetDeviceLanguageCode();
+        public string CurrentLanguage
+        {
+            get => _currentLanguage;
+            set
+            {
+                if (SetProperty(ref _currentLanguage, value))
+                    _ = ReloadPoisAsync();
+            }
+        }
+
         public bool IsAudioPlaying => _audio.IsPlaying;
 
         public MainViewModel(SyncService sync, IGeofenceService geofence,
@@ -61,10 +73,31 @@ namespace AudioGo.ViewModels
             StatusMessage = "Đang tải dữ liệu...";
             try
             {
-                Pois = await _sync.GetPoisAsync();
+                Pois = await _sync.GetPoisAsync(CurrentLanguage);
                 await _geofence.StartMonitoringAsync(Pois);
                 await _location.StartAsync();
                 StatusMessage = $"Đang theo dõi {Pois.Count} điểm";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Lỗi: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        public async Task ReloadPoisAsync()
+        {
+            IsLoading = true;
+            StatusMessage = "Đang chuyển ngôn ngữ...";
+            try
+            {
+                await _audio.StopAsync();
+                Pois = await _sync.GetPoisAsync(CurrentLanguage);
+                await _geofence.StartMonitoringAsync(Pois);
+                StatusMessage = $"Đang theo dõi {Pois.Count} điểm ({CurrentLanguage})";
             }
             catch (Exception ex)
             {

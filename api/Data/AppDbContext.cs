@@ -28,7 +28,13 @@ namespace Server.Data
                 .HasKey(tp => new { tp.TourId, tp.PoiId });
 
             // EF convention yêu cầu PK tên là "Id" hoặc "{ClassName}Id"
-            // HistoryId / LocationId không khớp → phải khai báo tường minh
+            // ContentId / ImageId / HistoryId / LocationId không khớp → phải khai báo tường minh
+            modelBuilder.Entity<PoiContent>()
+                .HasKey(pc => pc.ContentId);
+
+            modelBuilder.Entity<PoiGallery>()
+                .HasKey(pg => pg.ImageId);
+
             modelBuilder.Entity<ListenHistory>()
                 .HasKey(lh => lh.HistoryId);
 

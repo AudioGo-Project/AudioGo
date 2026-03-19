@@ -24,6 +24,17 @@
             Icon="tour.png"
             ContentTemplate="{DataTemplate views:TourListPage}"
             Route="TourListPage" />
+
+        <ShellContent
+            Title="Tìm kiếm"
+            Icon="search.png"
+            ContentTemplate="{DataTemplate views:SearchPage}"
+            Route="SearchPage" />
     </TabBar>
+
+    <!-- Routes chỉ dùng để navigation (không phải tab) -->
+    <Shell.Resources>
+        <ResourceDictionary />
+    </Shell.Resources>
 
 </Shell>
