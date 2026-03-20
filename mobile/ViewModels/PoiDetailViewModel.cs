@@ -18,7 +18,7 @@ namespace AudioGo.ViewModels
             set
             {
                 SetProperty(ref _poiId, value);
-                _ = LoadAsync(value);
+                Task.Run(() => LoadAsync(value));
             }
         }
 
@@ -30,12 +30,7 @@ namespace AudioGo.ViewModels
             private set { SetProperty(ref _poi, value); }
         }
 
-        private bool _isLoading;
-        public bool IsLoading
-        {
-            get => _isLoading;
-            private set { SetProperty(ref _isLoading, value); }
-        }
+
 
         private string _errorMessage = string.Empty;
         public string ErrorMessage

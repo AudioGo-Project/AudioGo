@@ -11,11 +11,11 @@ namespace AudioGo.ViewModels
         private readonly HttpClient _http;
         private string _baseUrl;
 
-        private bool _isLoading;
-        public bool IsLoading
+        // Override setter to also notify HasTours when loading changes
+        public new bool IsLoading
         {
-            get => _isLoading;
-            set { SetProperty(ref _isLoading, value); OnPropertyChanged(nameof(HasTours)); }
+            get => base.IsLoading;
+            set { base.IsLoading = value; OnPropertyChanged(nameof(HasTours)); }
         }
 
         private string _searchText = string.Empty;

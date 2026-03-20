@@ -34,27 +34,32 @@ namespace AudioGo.Services
         /// </summary>
         public async Task<List<POI>> GetPoisAsync(string languageCode = "vi", CancellationToken ct = default)
         {
-            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+            // Không dùng Connectivity.NetworkAccess vì Android WiFi thật
+            // đôi khi trả về Local/ConstrainedInternet thay vì Internet.
+            // Thay vào đó: thử gọi API thẳng — nếu thành công thì dùng,
+            // nếu timeout/lỗi thì fallback về SQLite cache.
+            try
             {
-                try
-                {
-                    var serverPois = await _api.GetPoisAsync(languageCode, ct);
+                var serverPois = await _api.GetPoisAsync(languageCode, ct);
 
+                if (serverPois.Count > 0)
+                {
                     // Cache metadata trước để app dùng được ngay
                     await CacheMetadataAsync(serverPois);
 
                     // Download audio files nền (không block UI)
                     _ = Task.Run(() => DownloadAudioFilesAsync(serverPois, ct), ct);
 
-                    // Đọc lại từ DB (đã có LocalAudioPath cũ nếu có)
+                    // Đọc lại từ DB (giữ LocalAudioPath cũ nếu có)
                     return (await _db.GetAllPoisAsync()).Select(MapToDto).ToList();
                 }
-                catch
-                {
-                    // Network lỗi → dùng cache
-                }
+            }
+            catch
+            {
+                // API không kết nối được → fallback về cache
             }
 
+            // Fallback: đọc từ SQLite cache (offline)
             return (await _db.GetAllPoisAsync()).Select(MapToDto).ToList();
         }
 
@@ -132,35 +137,43 @@ namespace AudioGo.Services
 
         private static PoiEntity MapToEntity(POI dto) => new()
         {
-            PoiId = dto.PoiId,
-            Latitude = dto.Latitude,
-            Longitude = dto.Longitude,
+            PoiId            = dto.PoiId,
+            Latitude         = dto.Latitude,
+            Longitude        = dto.Longitude,
             ActivationRadius = dto.ActivationRadius,
-            Priority = dto.Priority,
-            Status = dto.Status,
-            LogoUrl = dto.LogoUrl,
-            LanguageCode = dto.LanguageCode,
-            Title = dto.Title,
-            Description = dto.Description,
-            AudioUrl = dto.AudioUrl,
-            LocalAudioPath = dto.LocalAudioPath,
-            LastSyncedAt = DateTime.UtcNow
+            Priority         = dto.Priority,
+            Status           = dto.Status,
+            LogoUrl          = dto.LogoUrl,
+            LanguageCode     = dto.LanguageCode,
+            Title            = dto.Title,
+            Description      = dto.Description,
+            AudioUrl         = dto.AudioUrl,
+            LocalAudioPath   = dto.LocalAudioPath,
+            // Serialise list to JSON for SQLite storage
+            CategoriesJson   = dto.Categories.Count > 0
+                ? System.Text.Json.JsonSerializer.Serialize(dto.Categories)
+                : string.Empty,
+            LastSyncedAt     = DateTime.UtcNow
         };
 
         private static POI MapToDto(PoiEntity e) => new()
         {
-            PoiId = e.PoiId,
-            Latitude = e.Latitude,
-            Longitude = e.Longitude,
-            ActivationRadius = e.ActivationRadius,
-            Priority = e.Priority,
-            Status = e.Status,
-            LogoUrl = e.LogoUrl,
-            LanguageCode = e.LanguageCode,
-            Title = e.Title,
-            Description = e.Description,
-            AudioUrl = e.AudioUrl,
-            LocalAudioPath = e.LocalAudioPath
+            PoiId           = e.PoiId,
+            Latitude        = e.Latitude,
+            Longitude       = e.Longitude,
+            ActivationRadius= e.ActivationRadius,
+            Priority        = e.Priority,
+            Status          = e.Status,
+            LogoUrl         = e.LogoUrl,
+            LanguageCode    = e.LanguageCode,
+            Title           = e.Title,
+            Description     = e.Description,
+            AudioUrl        = e.AudioUrl,
+            LocalAudioPath  = e.LocalAudioPath,
+            // Deserialise comma-separated categories stored in SQLite
+            Categories      = string.IsNullOrEmpty(e.CategoriesJson)
+                ? new()
+                : System.Text.Json.JsonSerializer.Deserialize<List<string>>(e.CategoriesJson) ?? new(),
         };
     }
 }

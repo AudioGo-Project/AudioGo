@@ -28,12 +28,6 @@ namespace AudioGo.ViewModels
             private set { SetProperty(ref _activePoi, value); }
         }
 
-        private bool _isLoading;
-        public bool IsLoading
-        {
-            get => _isLoading;
-            private set { SetProperty(ref _isLoading, value); }
-        }
 
         private string _statusMessage = "Chờ GPS...";
         public string StatusMessage
@@ -55,6 +49,14 @@ namespace AudioGo.ViewModels
 
         public bool IsAudioPlaying => _audio.IsPlaying;
 
+        // ── Commands ────────────────────────────────────────────────
+        public System.Windows.Input.ICommand InitCommand           { get; }
+        public System.Windows.Input.ICommand SetVoiceCommand       { get; }
+        public System.Windows.Input.ICommand CreateTourCommand     { get; }
+        public System.Windows.Input.ICommand StartTourCommand      { get; }
+        public System.Windows.Input.ICommand QrScanCommand         { get; }
+        public System.Windows.Input.ICommand SearchCommand         { get; }
+
         public MainViewModel(SyncService sync, IGeofenceService geofence,
                              IAudioService audio, ILocationService location)
         {
@@ -65,6 +67,26 @@ namespace AudioGo.ViewModels
 
             _geofence.PoiTriggered += OnPoiTriggered;
             _location.LocationUpdated += OnLocationUpdated;
+
+            // Commands
+            InitCommand = new Command(async () => await InitAsync());
+            SetVoiceCommand = new Command<string>(v =>
+            {
+                // TODO: persist voice preference via Preferences
+                Preferences.Default.Set("voice", v ?? "female");
+            });
+            CreateTourCommand = new Command(async () =>
+                await Shell.Current.GoToAsync(nameof(AudioGo_Mobile.Views.CreateTourPage)));
+            StartTourCommand = new Command<string>(async tourId =>
+            {
+                if (!string.IsNullOrEmpty(tourId))
+                    await Shell.Current.GoToAsync(
+                        $"{nameof(AudioGo_Mobile.Views.TourDetailPage)}?tourId={tourId}");
+            });
+            QrScanCommand = new Command(async () =>
+                await Shell.Current.GoToAsync(nameof(AudioGo_Mobile.Views.QrScanPage)));
+            SearchCommand = new Command(async () =>
+                await Shell.Current.GoToAsync("//Search"));
         }
 
         public async Task InitAsync()
@@ -78,15 +100,27 @@ namespace AudioGo.ViewModels
                 await _location.StartAsync();
                 StatusMessage = $"Đang theo dõi {Pois.Count} điểm";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                StatusMessage = $"Lỗi: {ex.Message}";
+                // API chưa chạy — dùng mock data để Home/Map không trắng
+                Pois = GetMockPois();
+                StatusMessage = $"Offline — hiển thị {Pois.Count} điểm mẫu";
             }
             finally
             {
                 IsLoading = false;
             }
         }
+
+        private static List<POI> GetMockPois() => new()
+        {
+            new POI { PoiId="poi-1", Title="Hải Sản Bã Tư",           Latitude=100.7295, Longitude=106.6921, ActivationRadius=5, Description="Tôm hùm, ghẹ rang muối tươi ngon",       Categories=new(){"🦐 Hải sản"}, LanguageCode="vi" },
+            new POI { PoiId="poi-2", Title="Bún Bò Gánh Vĩnh Khánh", Latitude=100.7297, Longitude=106.6919, ActivationRadius=5, Description="Bún bò Huế chuẩn vị, mở từ 5 giờ sáng", Categories=new(){"🍜 Bún bò"},  LanguageCode="vi" },
+            new POI { PoiId="poi-3", Title="Ốc Bà Ba Mươi",           Latitude=100.7293, Longitude=106.6924, ActivationRadius=5, Description="Ốc hương, ốc len xào dừa đặc sản",      Categories=new(){"🍢 Ốc"},      LanguageCode="vi" },
+            new POI { PoiId="poi-4", Title="Cà Phê Cô Lan",           Latitude=100.7300, Longitude=106.6918, ActivationRadius=5, Description="Cà phê vợt pha kiểu miền Nam cổ điển",  Categories=new(){"☕ Cà phê"},   LanguageCode="vi" },
+            new POI { PoiId="poi-5", Title="Miếu Ông Địa Vĩnh Khánh", Latitude=100.7291, Longitude=106.6930, ActivationRadius=5, Description="Di tích lịch sử cuối Vĩnh Khánh",        Categories=new(){"🏛️ Di tích"}, LanguageCode="vi" },
+            new POI { PoiId="poi-6", Title="Bánh Mì Cô Hai",          Latitude=100.7299, Longitude=106.6925, ActivationRadius=5, Description="Bánh mì thịt nguội ăn kèm bì làm sẵn",  Categories=new(){"🥖 Bánh mì"}, LanguageCode="vi" },
+        };
 
         public async Task ReloadPoisAsync()
         {

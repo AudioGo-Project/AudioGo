@@ -1,244 +1,273 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="AudioGo_Mobile.Views.CreateTourPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource Background}"
-             Title="Tạo Tour Mới">
+             Title="Tạo tour mới">
 
     <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- ── Header ── -->
-        <Grid Grid.Row="0" BackgroundColor="{StaticResource Surface}"
-              Padding="20,52,20,20">
-            <Grid ColumnDefinitions="Auto,*,Auto">
-                <Border Grid.Column="0"
-                        BackgroundColor="{StaticResource Background}"
-                        StrokeShape="RoundRectangle 10"
-                        StrokeThickness="0"
-                        Padding="10,8">
-                    <Label Text="← Huỷ" FontSize="14"
-                           TextColor="{StaticResource TextSecondary}"/>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCancelClicked"/>
-                    </Border.GestureRecognizers>
-                </Border>
-                <Label Grid.Column="1"
-                       Text="Tạo Tour Mới"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimary}"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"/>
-                <Border Grid.Column="2"
-                        BackgroundColor="{StaticResource Primary}"
-                        StrokeShape="RoundRectangle 10"
-                        StrokeThickness="0"
-                        Padding="14,8">
-                    <Label Text="Lưu" FontSize="14" FontAttributes="Bold"
-                           TextColor="White"/>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding SaveCommand}"/>
-                    </Border.GestureRecognizers>
-                </Border>
-            </Grid>
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*,Auto"
+              BackgroundColor="{StaticResource Surface}"
+              Padding="16,52,16,16">
+            <Border Grid.Column="0"
+                    BackgroundColor="{StaticResource Background}"
+                    StrokeShape="RoundRectangle 10"
+                    StrokeThickness="0" Padding="10,8">
+                <Label Text="✕" FontSize="18" TextColor="{StaticResource TextSecondary}"/>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCancelClicked"/>
+                </Border.GestureRecognizers>
+            </Border>
+            <Label Grid.Column="1" Text="Tạo tour mới"
+                   FontSize="18" FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"
+                   HorizontalOptions="Center" VerticalOptions="Center"/>
+            <!-- Spacer để căn giữa title -->
+            <BoxView Grid.Column="2" WidthRequest="44" Color="Transparent"/>
         </Grid>
 
-        <!-- ── Form ── -->
+        <!-- ── Scrollable form ── -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20,20,20,40" Spacing="20">
+            <VerticalStackLayout Padding="16" Spacing="20">
 
-                <!-- Tên Tour -->
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Tên tour *"
-                           Style="{StaticResource SectionTitle}" FontSize="14"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="16,4">
-                        <Entry Placeholder="Ví dụ: Tour Hải Sản Vĩnh Khánh"
+                <!-- ── Tên tour + mô tả ── -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Thông tin cơ bản"
+                           Style="{StaticResource SectionTitle}"/>
+                    <Border Style="{StaticResource CardBorder}" Padding="14,4">
+                        <Entry x:Name="TourNameEntry"
+                               Placeholder="Tên tour của bạn..."
                                PlaceholderColor="{StaticResource TextTertiary}"
                                BackgroundColor="Transparent"
                                TextColor="{StaticResource TextPrimary}"
-                               Text="{Binding TourName}" />
+                               FontSize="15"
+                               Text="{Binding TourName}"/>
                     </Border>
-                </VerticalStackLayout>
-
-                <!-- Mô tả -->
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Mô tả" Style="{StaticResource SectionTitle}" FontSize="14"/>
-                    <Border Style="{StaticResource CardBorder}" Padding="16,8">
-                        <Editor Placeholder="Mô tả ngắn về hành trình..."
+                    <Border Style="{StaticResource CardBorder}" Padding="14,8">
+                        <Editor Placeholder="Mô tả ngắn về hành trình này..."
                                 PlaceholderColor="{StaticResource TextTertiary}"
                                 BackgroundColor="Transparent"
                                 TextColor="{StaticResource TextPrimary}"
-                                AutoSize="TextChanges"
-                                MinimumHeightRequest="80"
-                                Text="{Binding Description}" />
+                                FontSize="14"
+                                HeightRequest="80"
+                                Text="{Binding Description}"/>
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- Category chips -->
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Danh mục" Style="{StaticResource SectionTitle}" FontSize="14"/>
-                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                        <HorizontalStackLayout Spacing="8">
-                            <Border Style="{StaticResource ChipBorder}"
-                                    BackgroundColor="{StaticResource Primary}">
-                                <Label Text="🦐 Hải sản" TextColor="White" FontAttributes="Bold"/>
-                            </Border>
-                            <Border Style="{StaticResource ChipBorder}"
-                                    BackgroundColor="{StaticResource Surface}">
-                                <Label Text="🍜 Bún bò" TextColor="{StaticResource TextSecondary}"/>
-                            </Border>
-                            <Border Style="{StaticResource ChipBorder}"
-                                    BackgroundColor="{StaticResource Surface}">
-                                <Label Text="🍢 Ốc" TextColor="{StaticResource TextSecondary}"/>
-                            </Border>
-                            <Border Style="{StaticResource ChipBorder}"
-                                    BackgroundColor="{StaticResource Surface}">
-                                <Label Text="☕ Cà phê" TextColor="{StaticResource TextSecondary}"/>
-                            </Border>
-                            <Border Style="{StaticResource ChipBorder}"
-                                    BackgroundColor="{StaticResource Surface}">
-                                <Label Text="🏛️ Di tích" TextColor="{StaticResource TextSecondary}"/>
-                            </Border>
-                        </HorizontalStackLayout>
-                    </ScrollView>
-                </VerticalStackLayout>
-
-                <!-- Voice selection -->
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Giọng thuyết minh" Style="{StaticResource SectionTitle}" FontSize="14"/>
+                <!-- ── Giọng thuyết minh ── -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Giọng thuyết minh"
+                           Style="{StaticResource SectionTitle}"/>
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                         <Border Grid.Column="0"
                                 BackgroundColor="{StaticResource Primary}"
                                 StrokeShape="RoundRectangle 12"
-                                StrokeThickness="0"
-                                Padding="0,10">
-                            <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
-                                <Label Text="♀" FontSize="18" TextColor="White" HorizontalOptions="Center"/>
-                                <Label Text="Giọng Nữ" FontSize="13" FontAttributes="Bold"
-                                       TextColor="White" HorizontalOptions="Center"/>
-                            </VerticalStackLayout>
+                                StrokeThickness="0" Padding="0,8">
+                            <Grid ColumnDefinitions="Auto,*" Padding="14,0" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="♀" FontSize="16"
+                                       TextColor="White" VerticalOptions="Center"/>
+                                <Label Grid.Column="1" Text="Giọng Nữ"
+                                       FontSize="13" FontAttributes="Bold"
+                                       TextColor="White" VerticalOptions="Center"/>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetVoiceCommand}"
+                                                      CommandParameter="female"/>
+                            </Border.GestureRecognizers>
                         </Border>
                         <Border Grid.Column="1"
                                 BackgroundColor="{StaticResource Surface}"
                                 StrokeShape="RoundRectangle 12"
                                 StrokeThickness="1.5"
-                                Stroke="{StaticResource Gray200}"
-                                Padding="0,10">
-                            <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
-                                <Label Text="♂" FontSize="18"
+                                Stroke="{StaticResource Gray200}" Padding="0,8">
+                            <Grid ColumnDefinitions="Auto,*" Padding="14,0" ColumnSpacing="6">
+                                <Label Grid.Column="0" Text="♂" FontSize="16"
                                        TextColor="{StaticResource TextSecondary}"
-                                       HorizontalOptions="Center"/>
-                                <Label Text="Giọng Nam" FontSize="13"
+                                       VerticalOptions="Center"/>
+                                <Label Grid.Column="1" Text="Giọng Nam"
+                                       FontSize="13"
                                        TextColor="{StaticResource TextSecondary}"
-                                       HorizontalOptions="Center"/>
-                            </VerticalStackLayout>
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SetVoiceCommand}"
+                                                      CommandParameter="male"/>
+                            </Border.GestureRecognizers>
                         </Border>
                     </Grid>
                 </VerticalStackLayout>
 
-                <!-- POI list để chọn -->
-                <VerticalStackLayout Spacing="8">
+                <!-- ── Điểm thuyết minh (bỏ "Điểm dừng") ── -->
+                <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
-                               Text="Điểm dừng trong tour"
-                               Style="{StaticResource SectionTitle}" FontSize="14"/>
+                               Text="Điểm thuyết minh"
+                               Style="{StaticResource SectionTitle}"/>
                         <Border Grid.Column="1"
-                                BackgroundColor="{StaticResource PrimaryContainer}"
+                                BackgroundColor="{StaticResource Primary}"
                                 StrokeShape="RoundRectangle 8"
-                                StrokeThickness="0"
-                                Padding="10,6">
-                            <Label Text="+ Thêm điểm"
-                                   TextColor="{StaticResource Primary}"
-                                   FontSize="13" FontAttributes="Bold"/>
+                                StrokeThickness="0" Padding="10,6">
+                            <Label Text="+ Thêm điểm" TextColor="White"
+                                   FontSize="12" FontAttributes="Bold"/>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding AddPoiCommand}"/>
                             </Border.GestureRecognizers>
                         </Border>
                     </Grid>
 
-                    <!-- Selected POIs list -->
+                    <!-- Empty state -->
+                    <Border Style="{StaticResource CardBorder}"
+                            IsVisible="{Binding NoPoisSelected}"
+                            Padding="20,28">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="🎙️" FontSize="32" HorizontalOptions="Center"/>
+                            <Label Text="Chưa có điểm thuyết minh"
+                                   Style="{StaticResource TitleLabel}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Thêm POI để tạo hành trình audio của bạn"
+                                   Style="{StaticResource BodyLabel}"
+                                   HorizontalTextAlignment="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Danh sách điểm thuyết minh -->
                     <CollectionView ItemsSource="{Binding SelectedPois}"
+                                    IsVisible="{Binding NoPoisSelected, Converter={StaticResource InverseBoolConverter}}"
                                     SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource CardBorder}"
-                                        Padding="12"
-                                        Margin="0,0,0,8">
-                                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12">
-                                        <!-- Drag handle placeholder -->
-                                        <Label Grid.Column="0" Text="⋮⋮"
-                                               TextColor="{StaticResource TextTertiary}"
-                                               FontSize="18"
-                                               VerticalOptions="Center"/>
-                                        <!-- Step number -->
-                                        <Border Grid.Column="1"
+                                        Margin="0,4" Padding="14">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <!-- Step số -->
+                                        <Border Grid.Column="0"
                                                 BackgroundColor="{StaticResource Primary}"
-                                                StrokeShape="RoundRectangle 14"
+                                                StrokeShape="RoundRectangle 20"
                                                 StrokeThickness="0"
-                                                WidthRequest="28" HeightRequest="28">
+                                                WidthRequest="32" HeightRequest="32">
                                             <Label Text="{Binding StepOrder}"
                                                    TextColor="White"
-                                                   FontSize="12" FontAttributes="Bold"
+                                                   FontAttributes="Bold"
+                                                   FontSize="14"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"/>
                                         </Border>
                                         <!-- POI info -->
-                                        <VerticalStackLayout Grid.Column="2"
-                                                             VerticalOptions="Center" Spacing="2">
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3"
+                                                             VerticalOptions="Center">
                                             <Label Text="{Binding Title}"
                                                    Style="{StaticResource TitleLabel}"
                                                    FontSize="14"/>
                                             <Label Text="{Binding CategoryLabel}"
                                                    Style="{StaticResource CaptionLabel}"/>
                                         </VerticalStackLayout>
-                                        <!-- Remove button -->
-                                        <Label Grid.Column="3" Text="✕"
-                                               FontSize="16"
-                                               TextColor="{StaticResource TextTertiary}"
-                                               VerticalOptions="Center"/>
+                                        <!-- Thời gian ước tính đến điểm kế tiếp -->
+                                        <VerticalStackLayout Grid.Column="2"
+                                                             Spacing="2"
+                                                             HorizontalOptions="End"
+                                                             VerticalOptions="Center">
+                                            <Label Text="~5 phút" FontSize="11"
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="End"/>
+                                            <Label Text="đi bộ" FontSize="10"
+                                                   TextColor="{StaticResource TextTertiary}"
+                                                   HorizontalOptions="End"/>
+                                        </VerticalStackLayout>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
-                    <!-- Empty state -->
+                    <!-- Tổng thời gian ước tính -->
                     <Border Style="{StaticResource CardBorder}"
-                            Padding="20"
-                            IsVisible="{Binding NoPoisSelected}">
-                        <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
-                            <Label Text="📍" FontSize="32" HorizontalOptions="Center"/>
-                            <Label Text="Chưa có điểm dừng"
+                            IsVisible="{Binding NoPoisSelected, Converter={StaticResource InverseBoolConverter}}"
+                            BackgroundColor="{StaticResource PrimaryContainer}"
+                            Padding="14,10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0"
+                                   Text="Tổng thời gian ước tính"
                                    Style="{StaticResource BodyLabel}"
-                                   HorizontalOptions="Center"/>
-                            <Label Text="Nhấn '+ Thêm điểm' để chọn POI"
-                                   Style="{StaticResource CaptionLabel}"
-                                   HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
+                                   VerticalOptions="Center"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding TotalTimeLabel}"
+                                   TextColor="{StaticResource Primary}"
+                                   FontAttributes="Bold" FontSize="15"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- ── Map preview route ── -->
+                <VerticalStackLayout Spacing="10"
+                                     IsVisible="{Binding NoPoisSelected, Converter={StaticResource InverseBoolConverter}}">
+                    <Label Text="Xem trước trên bản đồ"
+                           Style="{StaticResource SectionTitle}"/>
+                    <Border Style="{StaticResource CardBorder}"
+                            Padding="0" HeightRequest="220">
+                        <Grid>
+                            <maps:Map x:Name="PreviewMap"
+                                      IsShowingUser="True"
+                                      MapType="Street"
+                                      IsScrollEnabled="False"
+                                      IsZoomEnabled="False"/>
+                            <!-- Overlay label -->
+                            <Border BackgroundColor="#CCffffff"
+                                    StrokeShape="RoundRectangle 8"
+                                    StrokeThickness="0"
+                                    Padding="10,6"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Start"
+                                    Margin="10">
+                                <Label Text="📍 Xem trước route"
+                                       FontSize="11" FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}"/>
+                            </Border>
+                        </Grid>
                     </Border>
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- ── Bottom bar ── -->
+        <!-- ── Bottom action bar ── -->
         <Border Grid.Row="2"
                 BackgroundColor="{StaticResource Surface}"
+                StrokeShape="RoundRectangle 0"
                 StrokeThickness="0"
-                Padding="20,12">
-            <Border.Shadow>
-                <Shadow Brush="Black" Opacity="0.05" Offset="0,-2" Radius="10"/>
-            </Border.Shadow>
+                Padding="16,12,16,32">
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <Button Grid.Column="0"
-                        Text="Xem trước"
-                        Style="{StaticResource OutlineButton}"
-                        Command="{Binding PreviewCommand}" />
-                <Button Grid.Column="1"
-                        Text="Lưu Tour"
-                        Style="{StaticResource PrimaryButton}"
-                        Command="{Binding SaveCommand}" />
+                <Border Grid.Column="0"
+                        BackgroundColor="{StaticResource Background}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="1.5"
+                        Stroke="{StaticResource Gray200}"
+                        Padding="0,14">
+                    <Label Text="Xem trước" TextColor="{StaticResource TextSecondary}"
+                           FontAttributes="Bold" FontSize="15"
+                           HorizontalOptions="Center"/>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PreviewCommand}"/>
+                    </Border.GestureRecognizers>
+                </Border>
+                <Border Grid.Column="1"
+                        BackgroundColor="{StaticResource Primary}"
+                        StrokeShape="RoundRectangle 12"
+                        StrokeThickness="0"
+                        Padding="0,14">
+                    <Label Text="💾 Lưu tour" TextColor="White"
+                           FontAttributes="Bold" FontSize="15"
+                           HorizontalOptions="Center"/>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SaveCommand}"/>
+                    </Border.GestureRecognizers>
+                </Border>
             </Grid>
         </Border>
 

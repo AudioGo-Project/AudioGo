@@ -11,25 +11,25 @@ namespace AudioGo.ViewModels
         private readonly HttpClient _http;
         private readonly string _baseUrl = "http://10.0.2.2:5000/api/mobile";
 
-        private bool _isLoading;
-        public bool IsLoading
+        // Override setter to also call UpdateStates when loading changes
+        public new bool IsLoading
         {
-            get => _isLoading;
-            set { SetProperty(ref _isLoading, value); UpdateStates(); }
+            get => base.IsLoading;
+            set { base.IsLoading = value; UpdateStates(); }
         }
 
         private string _query = string.Empty;
         public string Query
         {
             get => _query;
-            set { SetProperty(ref _query, value); _ = SearchAsync(value); }
+            set { SetProperty(ref _query, value); Task.Run(() => SearchAsync(value)); }
         }
 
         private string _activeCategory = string.Empty;
         public string ActiveCategory
         {
             get => _activeCategory;
-            set { SetProperty(ref _activeCategory, value); _ = SearchAsync(Query); }
+            set { SetProperty(ref _activeCategory, value); Task.Run(() => SearchAsync(Query)); }
         }
 
         public ObservableCollection<PoiSearchVm> Pois { get; } = new();

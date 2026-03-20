@@ -34,10 +34,23 @@ namespace AudioGo.ViewModels
 
         public ObservableCollection<PoiStepVm> SelectedPois { get; } = new();
         public bool NoPoisSelected => SelectedPois.Count == 0;
+        /// <summary>Tổng thời gian ước tính: 8 phút mỗi điểm + 5 phút đi bộ giữa các điểm.</summary>
+        public string TotalTimeLabel
+        {
+            get
+            {
+                if (SelectedPois.Count == 0) return "0 phút";
+                int mins = SelectedPois.Count * 8 + (SelectedPois.Count - 1) * 5;
+                return mins >= 60
+                    ? $"{mins / 60} giờ {mins % 60} phút"
+                    : $"~{mins} phút";
+            }
+        }
 
         public ICommand SaveCommand      { get; }
         public ICommand PreviewCommand   { get; }
         public ICommand AddPoiCommand    { get; }
+        public ICommand SetVoiceCommand  { get; }
 
         public CreateTourViewModel()
         {
@@ -45,6 +58,11 @@ namespace AudioGo.ViewModels
 
             SaveCommand = new Command(async () => await SaveTourAsync(),
                 () => !string.IsNullOrWhiteSpace(TourName));
+
+            SetVoiceCommand = new Command<string>(v =>
+            {
+                SelectedVoice = v ?? "female";
+            });
 
             PreviewCommand = new Command(() =>
             {
