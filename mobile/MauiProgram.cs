@@ -31,9 +31,10 @@ public static class MauiProgram
         // ── HTTP Client ───────────────────────────────────────────
         builder.Services.AddHttpClient<IApiService, ApiService>(client =>
         {
-            // Thay bằng URL thật khi deploy; dùng IP máy dev khi test trên Android
-            client.BaseAddress = new Uri("http://10.0.2.2:5000/"); // Android emulator → localhost
-            client.Timeout = TimeSpan.FromSeconds(10);
+            // 192.168.43.73 = IP LAN của laptop trong mạng WiFi chung
+            // Đổi về http://10.0.2.2:5086/ nếu dùng Android Emulator
+            client.BaseAddress = new Uri("http://192.168.43.73:5086/");
+            client.Timeout = TimeSpan.FromSeconds(15);
         });
 
         // ── Services ──────────────────────────────────────────────
@@ -50,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddTransient<TourListViewModel>();
         builder.Services.AddTransient<SearchViewModel>();
         builder.Services.AddTransient<CreateTourViewModel>();
+        builder.Services.AddTransient<TourDetailViewModel>();
 
         // ── Views ─────────────────────────────────────────────────
         builder.Services.AddSingleton<MainPage>();
