@@ -1,78 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- AudioGo Brand Colors (from Stitch: AudioGo Mobile Redesign v2) -->
+    <!-- ═══════════════════════════════════════════════════════════
+         AudioGo Design System — Colors
+         Primary: #E53935 (Red)  |  Design: Stitch AudioGo Mobile UI
+    ═══════════════════════════════════════════════════════════ -->
 
-    <!-- Primary: Brand Pink -->
-    <Color x:Key="Primary">#f0427c</Color>
-    <Color x:Key="PrimaryDark">#c4265a</Color>
-    <Color x:Key="PrimaryLight">#f988aa</Color>
-    <Color x:Key="PrimaryContainer">#fde8ef</Color>
+    <!-- Primary Red -->
+    <Color x:Key="Primary">#E53935</Color>
+    <Color x:Key="PrimaryDark">#C62828</Color>
+    <Color x:Key="PrimaryLight">#FFEBEE</Color>
+    <Color x:Key="PrimaryContainer">#FFCDD2</Color>
 
-    <!-- Secondary: Dark Navy -->
-    <Color x:Key="Secondary">#1a1a2e</Color>
-    <Color x:Key="SecondaryVariant">#16213e</Color>
-
-    <!-- Accent: Orange for chips/tags -->
-    <Color x:Key="Accent">#FF7043</Color>
-    <Color x:Key="AccentContainer">#FBE9E7</Color>
-
-    <!-- Surface & Background -->
+    <!-- Backgrounds -->
+    <Color x:Key="Background">#F5F5F5</Color>
     <Color x:Key="Surface">#FFFFFF</Color>
     <Color x:Key="SurfaceVariant">#F8F8F8</Color>
-    <Color x:Key="Background">#F3F4F6</Color>
-    <Color x:Key="CardBackground">#FFFFFF</Color>
+    <Color x:Key="DarkSurface">#1A1A2E</Color>
+    <Color x:Key="HeroOverlay">#CC000000</Color>
 
     <!-- Text -->
     <Color x:Key="TextPrimary">#1A1A1A</Color>
-    <Color x:Key="TextSecondary">#6B7280</Color>
-    <Color x:Key="TextTertiary">#9CA3AF</Color>
+    <Color x:Key="TextSecondary">#757575</Color>
+    <Color x:Key="TextTertiary">#BDBDBD</Color>
     <Color x:Key="TextOnPrimary">#FFFFFF</Color>
     <Color x:Key="TextOnDark">#FFFFFF</Color>
 
-    <!-- Status -->
+    <!-- Semantic -->
     <Color x:Key="Success">#4CAF50</Color>
+    <Color x:Key="SuccessLight">#E8F5E9</Color>
     <Color x:Key="Warning">#FF9800</Color>
-    <Color x:Key="Error">#EF5350</Color>
+    <Color x:Key="Error">#F44336</Color>
     <Color x:Key="Info">#2196F3</Color>
 
-    <!-- Base -->
-    <Color x:Key="White">White</Color>
-    <Color x:Key="Black">Black</Color>
+    <!-- Neutrals -->
+    <Color x:Key="Gray50">#FAFAFA</Color>
+    <Color x:Key="Gray100">#F5F5F5</Color>
+    <Color x:Key="Gray200">#EEEEEE</Color>
+    <Color x:Key="Gray300">#E0E0E0</Color>
+    <Color x:Key="Gray400">#BDBDBD</Color>
+    <Color x:Key="Gray500">#9E9E9E</Color>
+    <Color x:Key="Gray600">#757575</Color>
+    <Color x:Key="Gray700">#616161</Color>
+    <Color x:Key="Gray800">#424242</Color>
+    <Color x:Key="Gray900">#212121</Color>
+
+    <!-- Transparent -->
     <Color x:Key="Transparent">Transparent</Color>
+    <Color x:Key="SemiTransparentDark">#80000000</Color>
+    <Color x:Key="SemiTransparentLight">#80FFFFFF</Color>
 
-    <!-- Gray scale -->
-    <Color x:Key="Gray50">#F9FAFB</Color>
-    <Color x:Key="Gray100">#F3F4F6</Color>
-    <Color x:Key="Gray200">#E5E7EB</Color>
-    <Color x:Key="Gray300">#D1D5DB</Color>
-    <Color x:Key="Gray400">#9CA3AF</Color>
-    <Color x:Key="Gray500">#6B7280</Color>
-    <Color x:Key="Gray600">#4B5563</Color>
-    <Color x:Key="Gray700">#374151</Color>
-    <Color x:Key="Gray900">#111827</Color>
-    <Color x:Key="Gray950">#141414</Color>
-
-    <!-- Compat: giữ lại để Styles.xaml default không crash -->
-    <Color x:Key="PrimaryDarkText">#242424</Color>
-
-    <!-- Brushes -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
-    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
-    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource Accent}"/>
-    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}"/>
-    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource Background}"/>
-    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
-    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
-    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
-    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
-    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
-    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
-    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
-    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
-    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
+    <!-- Gradients (used as start/end colors) -->
+    <Color x:Key="GradientRedStart">#FF5252</Color>
+    <Color x:Key="GradientRedEnd">#E53935</Color>
 
 </ResourceDictionary>

@@ -2,20 +2,9 @@ using AudioGo.ViewModels;
 
 namespace AudioGo_Mobile.Views;
 
-[QueryProperty(nameof(TourId), "tourId")]
 public partial class TourDetailPage : ContentPage
 {
     private readonly TourDetailViewModel _vm;
-
-    public string? TourId
-    {
-        get => _vm.TourName; // only used as setter from navigation
-        set
-        {
-            if (!string.IsNullOrEmpty(value))
-                _ = _vm.LoadAsync(value);
-        }
-    }
 
     public TourDetailPage(TourDetailViewModel vm)
     {
@@ -27,13 +16,22 @@ public partial class TourDetailPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Nếu chưa có tourId (vào trực tiếp không qua navigate), load tour demo
-        if (string.IsNullOrEmpty(_vm.TourName))
-            await _vm.LoadAsync("tour-1");
+        // TourId may be set via QueryProperty; load with empty string to use whatever is set
+        await _vm.LoadAsync(_vm.TourId ?? string.Empty);
     }
 
-    private async void OnBackClicked(object? sender, TappedEventArgs e)
-    {
-        await Shell.Current.GoToAsync("..");
-    }
+    private async void OnBackTapped(object? sender, TappedEventArgs e)
+        => await Shell.Current.GoToAsync("..");
+
+    private void OnContinueClicked(object? sender, EventArgs e)
+        => _vm.TogglePlay();
+
+    private async void OnMapClicked(object? sender, EventArgs e)
+        => await Shell.Current.GoToAsync("//Map");
+
+    private void OnPlayPauseTapped(object? sender, TappedEventArgs e)
+        => _vm.TogglePlay();
+
+    private void OnNextStopTapped(object? sender, TappedEventArgs e)
+        => _vm.Stop();
 }

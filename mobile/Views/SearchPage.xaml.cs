@@ -1,22 +1,28 @@
+using AudioGo.ViewModels;
+
 namespace AudioGo_Mobile.Views;
 
 public partial class SearchPage : ContentPage
 {
-    public SearchPage()
+    private readonly SearchViewModel _vm;
+
+    public SearchPage(SearchViewModel vm)
     {
         InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
     }
 
     private void OnSearchTextChanged(object? sender, TextChangedEventArgs e)
     {
-        // Relay text sang ViewModel nếu có ViewModel binding
-        // Hiện dùng code-behind cho simplicity
+        _vm.Query = e.NewTextValue ?? string.Empty;
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        // Focus vào search entry khi page xuất hiện
-        SearchEntry?.Focus();
-    }
+    private async void OnMapViewTapped(object? sender, TappedEventArgs e)
+        => await Shell.Current.GoToAsync("//Map");
 }

@@ -10,7 +10,6 @@ public partial class AppShell : Shell
 
         // Routes cho navigation (không có tab — navigate bằng GoToAsync)
         Routing.RegisterRoute(nameof(PoiDetailPage),    typeof(PoiDetailPage));
-        Routing.RegisterRoute(nameof(QrScanPage),       typeof(QrScanPage));
         Routing.RegisterRoute(nameof(TourDetailPage),   typeof(TourDetailPage));
         Routing.RegisterRoute(nameof(CreateTourPage),   typeof(CreateTourPage));
     }

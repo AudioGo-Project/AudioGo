@@ -6,35 +6,36 @@
     xmlns:views="clr-namespace:AudioGo_Mobile.Views"
     Title="AudioGo">
 
+    <!-- ── Bottom Tab Bar ── -->
     <TabBar>
         <ShellContent
             Title="Trang chủ"
             Icon="home.png"
             ContentTemplate="{DataTemplate views:MainPage}"
-            Route="MainPage" />
+            Route="Home" />
 
         <ShellContent
             Title="Bản đồ"
             Icon="map.png"
             ContentTemplate="{DataTemplate views:MapPage}"
-            Route="MapPage" />
+            Route="Map" />
 
         <ShellContent
             Title="Tour"
             Icon="tour.png"
             ContentTemplate="{DataTemplate views:TourListPage}"
-            Route="TourListPage" />
+            Route="TourList" />
 
         <ShellContent
-            Title="Tìm kiếm"
+            Title="Khám phá"
             Icon="search.png"
             ContentTemplate="{DataTemplate views:SearchPage}"
-            Route="SearchPage" />
+            Route="Search" />
     </TabBar>
 
-    <!-- Routes chỉ dùng để navigation (không phải tab) -->
+    <!-- ── Modal / Push Routes (không phải tab) ── -->
     <Shell.Resources>
-        <ResourceDictionary />
+        <ResourceDictionary/>
     </Shell.Resources>
 
 </Shell>

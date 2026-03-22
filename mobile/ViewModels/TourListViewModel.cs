@@ -29,10 +29,29 @@ namespace AudioGo.ViewModels
         public ObservableCollection<TourRowVm> Tours { get; } = new();
 
         public bool HasTours => !IsLoading && Tours.Count > 0;
+        public bool IsEmpty => !IsLoading && Tours.Count == 0;
         public string CountLabel => $"{Tours.Count} tour quanh bạn";
 
         public ICommand OpenTourCommand { get; }
         public ICommand RefreshCommand { get; }
+        public ICommand ContinueTourCommand { get; }
+
+        public async Task DeleteTourAsync(string tourId)
+        {
+            try
+            {
+                // TODO: gọi API xóa tour khi endpoint sẵn sàng
+                var found = _allTours.FirstOrDefault(t => t.TourId == tourId);
+                if (found != null)
+                {
+                    _allTours.Remove(found);
+                    FilterTours(SearchText);
+                    OnPropertyChanged(nameof(HasTours));
+                    OnPropertyChanged(nameof(IsEmpty));
+                }
+            }
+            catch { /* silent */ }
+        }
 
         public TourListViewModel()
         {
@@ -40,10 +59,16 @@ namespace AudioGo.ViewModels
             // Fallback URL nếu chưa có DI — đổi khi có config
             _baseUrl = "http://10.0.2.2:5000/api/mobile";
 
-            OpenTourCommand = new Command<string>(async tourId =>
+            OpenTourCommand = new Command<TourRowVm>(async tour =>
             {
-                if (!string.IsNullOrEmpty(tourId))
-                    await Shell.Current.GoToAsync($"{nameof(AudioGo_Mobile.Views.TourDetailPage)}?tourId={tourId}");
+                if (tour != null)
+                    await Shell.Current.GoToAsync($"{nameof(AudioGo_Mobile.Views.TourDetailPage)}?tourId={tour.TourId}");
+            });
+
+            ContinueTourCommand = new Command<TourRowVm>(async tour =>
+            {
+                if (tour != null)
+                    await Shell.Current.GoToAsync($"{nameof(AudioGo_Mobile.Views.TourDetailPage)}?tourId={tour.TourId}");
             });
 
             RefreshCommand = new Command(async () => await LoadToursAsync());
@@ -91,11 +116,12 @@ namespace AudioGo.ViewModels
             {
                 new TourRowVm(new TourSummaryDto("mock-1", "Tour Hải Sản Vĩnh Khánh",
                     "Khám phá tinh hoa ẩm thực hải sản nổi tiếng ở khu phố Vĩnh Khánh.",
-                    8, null, DateTime.Today)),
+                    8, "tour_mock1.jpg", DateTime.Today)),
                 new TourRowVm(new TourSummaryDto("mock-2", "Vĩnh Khánh — Ký Ức Phố Cảng",
                     "Hành trình ngược thời gian về lịch sử hình thành khu phố Vĩnh Khánh.",
-                    12, null, DateTime.Today)),
+                    12, "tour_mock2.jpg", DateTime.Today)),
             };
+            FilterTours(SearchText);
         }
     }
 

@@ -2,8 +2,22 @@ using System.Collections.ObjectModel;
 
 namespace AudioGo.ViewModels
 {
+    [QueryProperty(nameof(TourId), "tourId")]
     public class TourDetailViewModel : BaseViewModel
     {
+        // ── Query parameter ──────────────────────────────────────────
+        private string _tourId = string.Empty;
+        public string? TourId
+        {
+            get => _tourId;
+            set
+            {
+                SetProperty(ref _tourId, value ?? string.Empty);
+                if (!string.IsNullOrEmpty(value))
+                    Task.Run(() => LoadAsync(value));
+            }
+        }
+
         // ── Bindable properties ────────────────────────────────────
         private string _tourName = string.Empty;
         public string TourName
@@ -80,6 +94,8 @@ namespace AudioGo.ViewModels
                 "tour-3" => "Tour Di Tích Lịch Sử",
                 _        => "Tour Khám Phá Quận 4"
             };
+
+            ThumbnailUrl = "tour_mock1.jpg";
 
             Description = "Khám phá hơn 20 điểm ẩm thực nổi tiếng tại phố Vĩnh Khánh, Quận 4.";
 

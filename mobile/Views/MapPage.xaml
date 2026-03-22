@@ -4,277 +4,123 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="AudioGo_Mobile.Views.MapPage"
              Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource Background}"
              Title="Bản đồ">
 
-    <!-- Root grid: map full screen + overlays -->
-    <Grid>
+    <Grid RowDefinitions="*,Auto">
 
-        <!-- ── Bản đồ full screen ── -->
-        <maps:Map x:Name="MapControl"
-                  IsShowingUser="True"
-                  MapType="Street" />
+        <!-- ── Map Full Screen ── -->
+        <Grid Grid.Row="0">
+            <maps:Map x:Name="MainMap"
+                      IsShowingUser="True"
+                      MapType="Street"
+                      IsScrollEnabled="True"
+                      IsZoomEnabled="True"/>
 
-        <!-- ── Floating Search Bar — top ── -->
-        <Border BackgroundColor="{StaticResource Surface}"
-                Stroke="Transparent"
-                StrokeShape="RoundRectangle 28"
-                Padding="12,0"
-                HorizontalOptions="Fill"
-                VerticalOptions="Start"
-                Margin="16,52,72,0">
-            <Border.Shadow>
-                <Shadow Brush="Black" Offset="0,2" Radius="12" Opacity="0.12"/>
-            </Border.Shadow>
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
-                <Label Grid.Column="0" Text="🔍" FontSize="18"
-                       VerticalOptions="Center" Padding="4,0" />
-                <Entry Grid.Column="1"
-                       x:Name="SearchEntry"
-                       Placeholder="Tìm POI, quán ăn, địa điểm..."
-                       PlaceholderColor="{StaticResource TextTertiary}"
-                       TextColor="{StaticResource TextPrimary}"
-                       BackgroundColor="Transparent"
-                       FontSize="15" ReturnType="Search"
-                       HeightRequest="48"
-                       TextChanged="OnSearchTextChanged"/>
-            </Grid>
-        </Border>
-
-        <!-- ── FAB Stack — góc trên phải ── -->
-        <VerticalStackLayout HorizontalOptions="End"
-                             VerticalOptions="Start"
-                             Margin="0,52,16,0"
-                             Spacing="10">
-            <Button Text="🌐" Style="{StaticResource FabButton}"
-                    Clicked="OnLanguageClicked" />
-            <Button Text="📷" Style="{StaticResource FabButton}"
-                    Clicked="OnQrScanClicked" />
-        </VerticalStackLayout>
-
-        <!-- ── FAB định vị — góc dưới phải ── -->
-        <Button Text="📍"
-                Style="{StaticResource FabButton}"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="16,0,16,280"
-                Clicked="OnLocateMeClicked"/>
-
-        <!-- ══════════════════════════════════════════════════════════
-             Bottom Sheet — POI panel (drag để expand/collapse)
-        ══════════════════════════════════════════════════════════ -->
-        <Border x:Name="BottomSheet"
-                BackgroundColor="{StaticResource Surface}"
-                StrokeShape="RoundRectangle 20,20,0,0"
-                StrokeThickness="0"
-                VerticalOptions="End"
-                HorizontalOptions="Fill">
-            <Border.Shadow>
-                <Shadow Brush="Black" Offset="0,-3" Radius="16" Opacity="0.12"/>
-            </Border.Shadow>
-
-            <VerticalStackLayout Spacing="0">
-                <!-- Handle bar -->
-                <ContentView Padding="0,10,0,4">
-                    <BoxView WidthRequest="40" HeightRequest="4"
-                             BackgroundColor="{StaticResource Gray200}"
-                             CornerRadius="2"
-                             HorizontalOptions="Center"/>
-                    <ContentView.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnBottomSheetHandleTapped"/>
-                    </ContentView.GestureRecognizers>
-                </ContentView>
-
-                <!-- Header + count -->
-                <Grid ColumnDefinitions="*,Auto" Padding="16,4,16,8">
-                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <Label Text="Địa điểm quanh đây"
-                               Style="{StaticResource SectionTitle}"/>
-                        <Label x:Name="PoiCountLabel"
-                               Text="Đang tải..."
-                               Style="{StaticResource CaptionLabel}"/>
-                    </VerticalStackLayout>
-                    <!-- Toggle collapse -->
-                    <Label Grid.Column="1" x:Name="ExpandIcon"
-                           Text="▲" FontSize="18"
-                           TextColor="{StaticResource TextSecondary}"
-                           VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnBottomSheetHandleTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
+            <!-- ── Header overlay ── -->
+            <Border BackgroundColor="{StaticResource Surface}"
+                    StrokeShape="RoundRectangle 0"
+                    StrokeThickness="0"
+                    VerticalOptions="Start"
+                    Padding="20,52,20,14">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <!-- Search bar pill -->
+                    <Border Grid.Column="0"
+                            BackgroundColor="{StaticResource Gray100}"
+                            StrokeShape="RoundRectangle 24"
+                            StrokeThickness="0"
+                            Padding="14,10">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                            <Label Grid.Column="0" Text="🔍" FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="Tìm kiếm địa điểm..."
+                                   Style="{StaticResource BodyLabel}"
+                                   VerticalOptions="Center"/>
+                            <Label Grid.Column="2" Text="🎤" FontSize="16"
+                                   TextColor="{StaticResource Primary}"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSearchTapped"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <!-- Filter button -->
+                    <Border Grid.Column="1"
+                            BackgroundColor="{StaticResource Primary}"
+                            StrokeShape="RoundRectangle 20"
+                            StrokeThickness="0"
+                            WidthRequest="44" HeightRequest="44">
+                        <Label Text="⚙" FontSize="18" TextColor="White"
+                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFilterTapped"/>
+                        </Border.GestureRecognizers>
+                    </Border>
                 </Grid>
+            </Border>
 
-                <!-- Category filter chips -->
-                <ScrollView Orientation="Horizontal"
-                            HorizontalScrollBarVisibility="Never"
-                            Margin="0,0,0,10">
-                    <HorizontalStackLayout Spacing="8" Padding="16,0">
-                        <Border x:Name="ChipAll" Style="{StaticResource ChipBorder}"
-                                BackgroundColor="{StaticResource Primary}">
-                            <Label Text="🍽️ Tất cả" TextColor="White" FontAttributes="Bold"/>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCategoryChipTapped"
-                                                      CommandParameter="all"/>
-                            </Border.GestureRecognizers>
+            <!-- ── FAB: Vị trí của tôi ── -->
+            <Border BackgroundColor="{StaticResource Surface}"
+                    StrokeShape="RoundRectangle 24"
+                    StrokeThickness="0"
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
+                    Margin="16,0,16,16"
+                    WidthRequest="48" HeightRequest="48">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.2"/>
+                </Border.Shadow>
+                <Label Text="📍" FontSize="22"
+                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnLocateMeTapped"/>
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- ── Loading overlay ── -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               Color="{StaticResource Primary}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- ── Bottom Sheet: Lọc / danh sách POI ── -->
+        <Border Grid.Row="1"
+                Style="{StaticResource MiniPlayerBar}"
+                Padding="0">
+            <VerticalStackLayout Spacing="0">
+                <!-- Drag handle -->
+                <BoxView HeightRequest="4" WidthRequest="40" Color="{StaticResource Gray300}"
+                         HorizontalOptions="Center" CornerRadius="2" Margin="0,10,0,0"/>
+
+                <!-- Category pills -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never"
+                            Padding="16,12">
+                    <HorizontalStackLayout Spacing="8">
+                        <Border Style="{StaticResource PillBorderActive}">
+                            <Label Text="🗺 Tất cả" TextColor="White" FontSize="13" FontAttributes="Bold"/>
                         </Border>
-                        <Border Style="{StaticResource ChipBorder}"
-                                BackgroundColor="{StaticResource Surface}">
-                            <Label Text="🦐 Hải sản" TextColor="{StaticResource TextSecondary}"/>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCategoryChipTapped"
-                                                      CommandParameter="seafood"/>
-                            </Border.GestureRecognizers>
+                        <Border Style="{StaticResource PillBorder}">
+                            <Label Text="🦐 Hải sản" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
                         </Border>
-                        <Border Style="{StaticResource ChipBorder}"
-                                BackgroundColor="{StaticResource Surface}">
-                            <Label Text="🍜 Bún bò" TextColor="{StaticResource TextSecondary}"/>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCategoryChipTapped"
-                                                      CommandParameter="noodle"/>
-                            </Border.GestureRecognizers>
+                        <Border Style="{StaticResource PillBorder}">
+                            <Label Text="🍜 Bún phở" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
                         </Border>
-                        <Border Style="{StaticResource ChipBorder}"
-                                BackgroundColor="{StaticResource Surface}">
-                            <Label Text="🍢 Ốc" TextColor="{StaticResource TextSecondary}"/>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCategoryChipTapped"
-                                                      CommandParameter="shellfish"/>
-                            </Border.GestureRecognizers>
+                        <Border Style="{StaticResource PillBorder}">
+                            <Label Text="🍢 Ốc" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
                         </Border>
-                        <Border Style="{StaticResource ChipBorder}"
-                                BackgroundColor="{StaticResource Surface}">
-                            <Label Text="☕ Cà phê" TextColor="{StaticResource TextSecondary}"/>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCategoryChipTapped"
-                                                      CommandParameter="cafe"/>
-                            </Border.GestureRecognizers>
-                        </Border>
-                        <Border Style="{StaticResource ChipBorder}"
-                                BackgroundColor="{StaticResource Surface}">
-                            <Label Text="🏛️ Di tích" TextColor="{StaticResource TextSecondary}"/>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCategoryChipTapped"
-                                                      CommandParameter="heritage"/>
-                            </Border.GestureRecognizers>
+                        <Border Style="{StaticResource PillBorder}">
+                            <Label Text="☕ Cà phê" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
                         </Border>
                     </HorizontalStackLayout>
                 </ScrollView>
 
-                <!-- POI List -->
-                <CollectionView x:Name="PoiCollectionView"
-                                HeightRequest="220"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Style="{StaticResource CardBorder}"
-                                    Padding="12" Margin="16,4,16,4">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                    <!-- POI image / icon -->
-                                    <Border Grid.Column="0"
-                                            BackgroundColor="{StaticResource PrimaryContainer}"
-                                            StrokeShape="RoundRectangle 10"
-                                            StrokeThickness="0"
-                                            WidthRequest="52" HeightRequest="52">
-                                        <Image Source="{Binding LogoUrl}"
-                                               Aspect="AspectFill"/>
-                                    </Border>
-                                    <!-- Info -->
-                                    <VerticalStackLayout Grid.Column="1" Spacing="3"
-                                                         VerticalOptions="Center">
-                                        <Label Text="{Binding Title}"
-                                               Style="{StaticResource TitleLabel}"
-                                               FontSize="14"
-                                               LineBreakMode="TailTruncation"/>
-                                        <HorizontalStackLayout Spacing="6">
-                                            <Border BackgroundColor="{StaticResource PrimaryContainer}"
-                                                    StrokeShape="RoundRectangle 4"
-                                                    StrokeThickness="0" Padding="5,1">
-                                                <Label Text="{Binding CategoryLabel}"
-                                                       TextColor="{StaticResource Primary}"
-                                                       FontSize="10" FontAttributes="Bold"/>
-                                            </Border>
-                                            <Label Text="{Binding DistanceLabel}"
-                                                   Style="{StaticResource CaptionLabel}"/>
-                                        </HorizontalStackLayout>
-                                    </VerticalStackLayout>
-                                    <!-- Play audio button -->
-                                    <Border Grid.Column="2"
-                                            BackgroundColor="{StaticResource Primary}"
-                                            StrokeShape="RoundRectangle 20"
-                                            StrokeThickness="0"
-                                            WidthRequest="36" HeightRequest="36"
-                                            VerticalOptions="Center">
-                                        <Label Text="▶" TextColor="White"
-                                               FontSize="14"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center"/>
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnPoiPlayClicked"
-                                                                  CommandParameter="{Binding PoiId}"/>
-                                        </Border.GestureRecognizers>
-                                    </Border>
-                                </Grid>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnPoiCardTapped"
-                                                          CommandParameter="{Binding PoiId}"/>
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <!-- Safe area bottom padding -->
-                <ContentView HeightRequest="20"/>
+                <!-- POI count -->
+                <Label Margin="16,0,16,12"
+                       Text="{Binding MapStatusLabel}"
+                       Style="{StaticResource CaptionLabel}"/>
             </VerticalStackLayout>
-        </Border>
-
-        <!-- ── Active POI mini banner — khi tap pin trên map ── -->
-        <Border x:Name="ActivePoiBanner"
-                Style="{StaticResource CardBorder}"
-                IsVisible="False"
-                VerticalOptions="End"
-                HorizontalOptions="Fill"
-                Margin="12,0,12,300"
-                Padding="14,12">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <HorizontalStackLayout Spacing="6">
-                        <Border BackgroundColor="{StaticResource PrimaryContainer}"
-                                StrokeShape="RoundRectangle 4" StrokeThickness="0" Padding="5,1">
-                            <Label x:Name="CategoryChipLabel"
-                                   Text="📍 Ẩm thực"
-                                   TextColor="{StaticResource Primary}"
-                                   FontSize="11" FontAttributes="Bold"/>
-                        </Border>
-                        <Label x:Name="DistanceLabel" Text="50m"
-                               Style="{StaticResource CaptionLabel}"
-                               VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                    <Label x:Name="ActivePoiTitle"
-                           Style="{StaticResource TitleLabel}"
-                           FontSize="15" MaxLines="1"
-                           LineBreakMode="TailTruncation"/>
-                    <Label x:Name="ActivePoiDesc"
-                           Style="{StaticResource BodyLabel}"
-                           MaxLines="1" LineBreakMode="TailTruncation"/>
-                </VerticalStackLayout>
-                <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
-                    <Button x:Name="MiniPlayBtn"
-                            Text="▶"
-                            BackgroundColor="{StaticResource PrimaryContainer}"
-                            TextColor="{StaticResource Primary}"
-                            CornerRadius="20"
-                            WidthRequest="40" HeightRequest="40"
-                            FontSize="16" Padding="0"
-                            Clicked="OnMiniPlayClicked" />
-                    <Button Text="Chi tiết"
-                            Clicked="OnPoiBannerDetailClicked"
-                            Style="{StaticResource PrimaryButton}"
-                            Padding="12,8"
-                            MinimumHeightRequest="40"
-                            VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </Grid>
         </Border>
 
     </Grid>

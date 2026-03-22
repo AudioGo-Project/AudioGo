@@ -13,33 +13,42 @@ public partial class PoiDetailPage : ContentPage
         BindingContext = vm;
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        // PoiId is set via QueryProperty; LoadAsync is called automatically
+    }
+
+    private async void OnBackTapped(object? sender, TappedEventArgs e)
+        => await Shell.Current.GoToAsync("..");
+
     private async void OnPlayPauseTapped(object? sender, TappedEventArgs e)
+        => await _vm.TogglePlayPauseAsync();
+
+    private void OnPreviousTapped(object? sender, TappedEventArgs e)
     {
-        await _vm.TogglePlayPauseAsync();
-        
-        // Update icon button locally
-        if (PlayPauseBtn != null)
-        {
-            PlayPauseBtn.Text = _vm.IsPlaying ? "⏸" : "▶";
-        }
+        // Previous stop handled by TourDetailVM; here it stops audio
+        _ = _vm.StopAudioAsync();
     }
 
-    private void OnSkipBackClicked(object? sender, EventArgs e)
+    private void OnNextTapped(object? sender, TappedEventArgs e)
+        => _ = _vm.PlayAudioAsync();
+
+    private void OnSpeedTapped(object? sender, TappedEventArgs e)
     {
-        // TODO: Skip back audio
+        // Speed cycling: UI-only for now
     }
 
-    private void OnSkipForwardClicked(object? sender, EventArgs e)
+    private void OnSliderDragCompleted(object? sender, EventArgs e)
     {
-        // TODO: Skip forward audio
+        // Seek: plugin does not expose seek, skip silently
     }
 
-    private async void OnStopClicked(object? sender, EventArgs e)
+    private void OnExpandDescTapped(object? sender, TappedEventArgs e)
     {
-        await _vm.StopAudioAsync();
-        if (PlayPauseBtn != null)
-        {
-            PlayPauseBtn.Text = "▶";
-        }
+        // Toggle description expanded state via VM property if available
     }
+
+    private async void OnNextPoiClicked(object? sender, EventArgs e)
+        => await Shell.Current.GoToAsync("..");
 }

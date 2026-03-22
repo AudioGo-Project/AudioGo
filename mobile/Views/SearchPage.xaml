@@ -4,199 +4,147 @@
              x:Class="AudioGo_Mobile.Views.SearchPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource Background}"
-             Title="Tìm kiếm">
+             Title="Khám phá">
 
-    <VerticalStackLayout Spacing="0">
+    <Grid RowDefinitions="Auto,*">
 
-        <!-- ── Search Header ── -->
-        <VerticalStackLayout BackgroundColor="{StaticResource Surface}"
-                             Padding="16,52,16,16"
-                             Spacing="12">
-            <Label Text="Khám phá Vĩnh Khánh"
-                   FontSize="22"
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource TextPrimary}" />
+        <!-- ── Header ── -->
+        <VerticalStackLayout Grid.Row="0"
+                             BackgroundColor="{StaticResource Surface}"
+                             Padding="20,52,20,16"
+                             Spacing="14">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="Khám phá" Style="{StaticResource HeadlineLabel}"/>
+                    <Label Text="Vĩnh Khánh · Quận 4" Style="{StaticResource BodyLabel}"/>
+                </VerticalStackLayout>
+                <Border Grid.Column="1"
+                        BackgroundColor="{StaticResource Gray100}"
+                        StrokeShape="RoundRectangle 20"
+                        StrokeThickness="0"
+                        WidthRequest="40" HeightRequest="40"
+                        VerticalOptions="Center">
+                    <Label Text="🗺️" FontSize="20"
+                           HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMapViewTapped"/>
+                    </Border.GestureRecognizers>
+                </Border>
+            </Grid>
 
-            <!-- Search box -->
-            <Border BackgroundColor="{StaticResource Background}"
-                    Style="{StaticResource CardBorder}"
-                    Padding="14,4">
-                <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Label Grid.Column="0" Text="🔍" VerticalOptions="Center"
-                           FontSize="18" TextColor="{StaticResource TextSecondary}" />
+            <!-- Search pill -->
+            <Border BackgroundColor="{StaticResource Gray100}"
+                    StrokeShape="RoundRectangle 24"
+                    StrokeThickness="0"
+                    Padding="14,10">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Grid.Column="0" Text="🔍" FontSize="16" VerticalOptions="Center"/>
                     <Entry Grid.Column="1"
-                           x:Name="SearchEntry"
-                           Placeholder="Tên quán, đặc sản, địa điểm..."
-                           PlaceholderColor="{StaticResource TextTertiary}"
+                           Placeholder="Tìm kiếm địa điểm..."
+                           PlaceholderColor="{StaticResource Gray400}"
                            BackgroundColor="Transparent"
                            TextColor="{StaticResource TextPrimary}"
-                           TextChanged="OnSearchTextChanged" />
-                    <Label Grid.Column="2" Text="⊗"
-                           VerticalOptions="Center"
-                           FontSize="16"
-                           TextColor="{StaticResource TextTertiary}" />
+                           FontSize="14"
+                           ReturnType="Search"
+                           Text="{Binding SearchQuery}"
+                           TextChanged="OnSearchTextChanged"/>
+                    <Label Grid.Column="2" Text="🎤" FontSize="16"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center"/>
                 </Grid>
             </Border>
-
-            <!-- Category filter chips -->
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                <HorizontalStackLayout Spacing="8">
-                    <Border x:Name="ChipAll" Style="{StaticResource ChipBorder}"
-                            BackgroundColor="{StaticResource Primary}">
-                        <Label Text="🍽️ Tất cả" TextColor="White" FontAttributes="Bold"/>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter=""/>
-                        </Border.GestureRecognizers>
-                    </Border>
-                    <Border Style="{StaticResource ChipBorder}"
-                            BackgroundColor="{StaticResource Surface}">
-                        <Label Text="🦐 Hải sản" TextColor="{StaticResource TextSecondary}"/>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Hải sản"/>
-                        </Border.GestureRecognizers>
-                    </Border>
-                    <Border Style="{StaticResource ChipBorder}"
-                            BackgroundColor="{StaticResource Surface}">
-                        <Label Text="🍜 Bún bò" TextColor="{StaticResource TextSecondary}"/>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Bún bò"/>
-                        </Border.GestureRecognizers>
-                    </Border>
-                    <Border Style="{StaticResource ChipBorder}"
-                            BackgroundColor="{StaticResource Surface}">
-                        <Label Text="🍢 Ốc" TextColor="{StaticResource TextSecondary}"/>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Ốc"/>
-                        </Border.GestureRecognizers>
-                    </Border>
-                    <Border Style="{StaticResource ChipBorder}"
-                            BackgroundColor="{StaticResource Surface}">
-                        <Label Text="🏛️ Di tích" TextColor="{StaticResource TextSecondary}"/>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="Di tích"/>
-                        </Border.GestureRecognizers>
-                    </Border>
-                </HorizontalStackLayout>
-            </ScrollView>
         </VerticalStackLayout>
 
-        <!-- ── Kết quả (2-col grid) ── -->
-        <ScrollView>
-            <VerticalStackLayout Padding="16,16,16,40" Spacing="16">
+        <!-- ── Results ── -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
 
                 <!-- Loading -->
                 <ActivityIndicator IsRunning="{Binding IsLoading}"
                                    IsVisible="{Binding IsLoading}"
-                                   Color="{StaticResource Primary}" />
+                                   Color="{StaticResource Primary}"
+                                   HorizontalOptions="Center"/>
 
-                <!-- Section: Địa điểm nổi bật -->
-                <Label Text="Địa điểm nổi bật"
-                       Style="{StaticResource SectionTitle}"
-                       IsVisible="{Binding HasResults}"/>
-
-                <CollectionView ItemsSource="{Binding Pois}"
-                                IsVisible="{Binding HasResults}"
-                                ItemsLayout="VerticalGrid, 2"
-                                ItemSizingStrategy="MeasureAllItems">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Style="{StaticResource CardBorder}"
-                                    Padding="0"
-                                    Margin="4,4">
-                                <VerticalStackLayout Spacing="0">
-                                    <Grid>
-                                        <Image Source="{Binding LogoUrl}"
-                                               HeightRequest="120"
-                                               Aspect="AspectFill"
-                                               BackgroundColor="{StaticResource Gray100}" />
-                                        <!-- Save icon -->
-                                        <Border HorizontalOptions="End" VerticalOptions="Start"
-                                                Margin="0,8,8,0"
-                                                BackgroundColor="#59FFFFFF"
-                                                StrokeShape="RoundRectangle 8"
-                                                StrokeThickness="0"
-                                                Padding="6">
-                                            <Label Text="♡" FontSize="14" TextColor="White"/>
-                                        </Border>
-                                    </Grid>
-                                    <VerticalStackLayout Padding="10" Spacing="3">
-                                        <!-- Category badge -->
-                                        <Border BackgroundColor="{StaticResource PrimaryContainer}"
-                                                StrokeShape="RoundRectangle 6"
-                                                StrokeThickness="0"
-                                                Padding="6,2"
-                                                HorizontalOptions="Start">
-                                            <Label Text="{Binding CategoryLabel}"
-                                                   TextColor="{StaticResource Primary}"
-                                                   FontSize="10"
-                                                   FontAttributes="Bold" />
-                                        </Border>
-                                        <Label Text="{Binding Title}"
-                                               Style="{StaticResource TitleLabel}"
-                                               FontSize="13"
-                                               LineBreakMode="TailTruncation" />
-                                        <Label Text="📍 Khu phố Vĩnh Khánh"
-                                               Style="{StaticResource CaptionLabel}" />
-                                    </VerticalStackLayout>
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <!-- Section: Tours -->
-                <Label Text="Tours phổ biến"
-                       Style="{StaticResource SectionTitle}"
-                       IsVisible="{Binding HasTours}"
-                       Margin="0,8,0,0"/>
-
-                <CollectionView ItemsSource="{Binding Tours}"
-                                IsVisible="{Binding HasTours}"
-                                ItemsLayout="HorizontalList">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Style="{StaticResource CardBorder}"
-                                    WidthRequest="200"
-                                    Padding="0"
-                                    Margin="0,4,8,4">
-                                <VerticalStackLayout Spacing="0">
-                                    <Image Source="{Binding ThumbnailUrl}"
-                                           HeightRequest="110"
-                                           Aspect="AspectFill"
-                                           BackgroundColor="{StaticResource Gray200}" />
-                                    <VerticalStackLayout Padding="10" Spacing="4">
-                                        <Label Text="{Binding Name}"
-                                               Style="{StaticResource TitleLabel}"
-                                               FontSize="14"
-                                               LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding PoiCountLabel}"
-                                               Style="{StaticResource CaptionLabel}" />
-                                    </VerticalStackLayout>
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.Header>
-                        <ContentView WidthRequest="0"/>
-                    </CollectionView.Header>
-                </CollectionView>
-
-                <!-- Empty state -->
+                <!-- Empty / no results -->
                 <VerticalStackLayout IsVisible="{Binding IsEmpty}"
+                                     Spacing="12"
                                      HorizontalOptions="Center"
-                                     Margin="0,40,0,0"
-                                     Spacing="12">
+                                     Margin="0,40,0,0">
                     <Label Text="🔍" FontSize="48" HorizontalOptions="Center"/>
                     <Label Text="Không tìm thấy kết quả"
-                           Style="{StaticResource TitleLabel}"
+                           Style="{StaticResource SectionTitle}"
                            HorizontalOptions="Center"/>
-                    <Label Text="Thử tìm kiếm với từ khoá khác"
+                    <Label Text="Thử tìm theo tên quán, món ăn..."
                            Style="{StaticResource BodyLabel}"
-                           HorizontalOptions="Center"/>
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
 
+                <!-- Results section title -->
+                <Label IsVisible="{Binding HasResults}"
+                       Text="Địa điểm nổi bật"
+                       Style="{StaticResource SectionTitle}"/>
+
+                <!-- 2-column grid of POI cards -->
+                <CollectionView ItemsSource="{Binding FilteredPois}"
+                                IsVisible="{Binding HasResults}"
+                                SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical"
+                                         Span="2"
+                                         HorizontalItemSpacing="10"
+                                         VerticalItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource PoiGridCard}" Padding="0">
+                                <VerticalStackLayout Spacing="0">
+                                    <!-- Thumbnail -->
+                                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                                            StrokeShape="RoundRectangle 0"
+                                            StrokeThickness="0"
+                                            HeightRequest="110">
+                                        <Grid>
+                                            <Label Text="📍" FontSize="36"
+                                                   HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            <!-- Heart icon -->
+                                            <Border BackgroundColor="{StaticResource SemiTransparentLight}"
+                                                    StrokeShape="RoundRectangle 16"
+                                                    StrokeThickness="0"
+                                                    HorizontalOptions="End"
+                                                    VerticalOptions="Start"
+                                                    Margin="8"
+                                                    Padding="6">
+                                                <Label Text="♡" FontSize="14" TextColor="{StaticResource Primary}"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                    <!-- Info -->
+                                    <VerticalStackLayout Padding="10" Spacing="4">
+                                        <Label Text="{Binding Title}"
+                                               Style="{StaticResource SectionTitle}"
+                                               FontSize="13"
+                                               MaxLines="2"
+                                               LineBreakMode="TailTruncation"/>
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
+                                            <Label Grid.Column="0" Text="⭐" FontSize="11"/>
+                                            <Label Grid.Column="1" Text="4.8 · Cách 200m"
+                                                   Style="{StaticResource CaptionLabel}"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenPoiCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <BoxView HeightRequest="16" Color="Transparent"/>
             </VerticalStackLayout>
         </ScrollView>
 
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>

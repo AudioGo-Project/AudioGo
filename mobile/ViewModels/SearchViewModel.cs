@@ -35,6 +35,14 @@ namespace AudioGo.ViewModels
         public ObservableCollection<PoiSearchVm> Pois { get; } = new();
         public ObservableCollection<TourSearchVm> Tours { get; } = new();
 
+        // XAML binding aliases
+        public ObservableCollection<PoiSearchVm> FilteredPois => Pois;
+        public string SearchQuery
+        {
+            get => _query;
+            set => Query = value; // delegate to Query which triggers search
+        }
+
         private bool _hasResults;
         public bool HasResults { get => _hasResults; set => SetProperty(ref _hasResults, value); }
 

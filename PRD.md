@@ -54,7 +54,7 @@ Mục tiêu tài liệu này (PRD) là đóng vai trò "nguồn sự thật duy 
   - [ ] Người dùng bước ra rồi bước vào lại trong vòng 5 phút -> Không phát lại audio.
   - [ ] Người dùng bước vào lại sau phút thứ 6 -> Phát lại audio bình thường.
 
-**US 1.3 - Quét Mã QR Dự Phòng (QR Code Fallback) - Chua**
+**US 1.3 - Quét Mã QR Dự Phòng (QR Code Fallback) - Chưa cần làm**
 > [!NOTE]
 > *Là một Du khách, tôi muốn có thể lấy camera quét mã QR trên băng rôn của quán để nghe âm thanh ngay lập tức, phòng trường hợp GPS nhảy sai vị trí.*
 - **FR:** Nút "Scan QR" trên UI mở native camera. Decode ID và map trực tiếp với Local Database để lấy `audio_url`.

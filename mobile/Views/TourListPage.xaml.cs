@@ -1,4 +1,5 @@
 using AudioGo.ViewModels;
+using Shared;
 
 namespace AudioGo_Mobile.Views;
 
@@ -16,12 +17,21 @@ public partial class TourListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (_vm.Tours.Count == 0)
-            await _vm.LoadToursAsync();
+        await _vm.LoadToursAsync();
     }
 
-    private async void OnCreateTourClicked(object? sender, TappedEventArgs e)
+    private async void OnCreateTourClicked(object? sender, EventArgs e)
+        => await Shell.Current.GoToAsync(nameof(CreateTourPage));
+
+    private async void OnTourMenuTapped(object? sender, TappedEventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(CreateTourPage));
+        if (e.Parameter is not Shared.DTOs.TourSummaryDto tour) return;
+        var action = await DisplayActionSheet(
+            tour.Name, "Hủy", null,
+            "Xem chi tiết", "Chỉnh sửa", "Xóa");
+        if (action == "Xem chi tiết")
+            await Shell.Current.GoToAsync($"{nameof(TourDetailPage)}?tourId={tour.TourId}");
+        else if (action == "Xóa")
+            await _vm.DeleteTourAsync(tour.TourId);
     }
 }

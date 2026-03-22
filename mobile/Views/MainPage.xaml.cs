@@ -1,4 +1,5 @@
 using AudioGo.ViewModels;
+using Shared;
 
 namespace AudioGo_Mobile.Views;
 
@@ -16,10 +17,24 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Load data on start if empty
-        if (_vm.Pois == null || !_vm.Pois.Any())
-        {
-            await _vm.InitAsync();
-        }
+        await _vm.InitAsync();
     }
+
+    private async void OnViewAllPoisTapped(object? sender, TappedEventArgs e)
+        => await Shell.Current.GoToAsync("//Search");
+
+    private async void OnViewAllToursTapped(object? sender, TappedEventArgs e)
+        => await Shell.Current.GoToAsync("//TourList");
+
+    private async void OnStartTourClicked(object? sender, EventArgs e)
+        => await Shell.Current.GoToAsync("//TourList");
+
+    private async void OnCreateTourClicked(object? sender, EventArgs e)
+        => await Shell.Current.GoToAsync(nameof(CreateTourPage));
+
+    private void OnMiniPlayerPauseTapped(object? sender, TappedEventArgs e)
+        => _vm.ToggleAudio();
+
+    private void OnMiniPlayerCloseTapped(object? sender, TappedEventArgs e)
+        => _vm.StopAudio();
 }

@@ -34,6 +34,18 @@ namespace AudioGo.ViewModels
 
         public ObservableCollection<PoiStepVm> SelectedPois { get; } = new();
         public bool NoPoisSelected => SelectedPois.Count == 0;
+
+        // XAML aliases
+        public ObservableCollection<PoiStepVm> SelectedStops => SelectedPois;
+        public string StopCountLabel => $"Điểm dừng ({SelectedPois.Count})";
+        public bool CanSave => !string.IsNullOrWhiteSpace(_tourName);
+
+        public System.Windows.Input.ICommand RemoveStopCommand => new Command<PoiStepVm>(stop =>
+        {
+            if (stop != null) SelectedPois.Remove(stop);
+            OnPropertyChanged(nameof(StopCountLabel));
+            OnPropertyChanged(nameof(NoPoisSelected));
+        });
         /// <summary>Tổng thời gian ước tính: 8 phút mỗi điểm + 5 phút đi bộ giữa các điểm.</summary>
         public string TotalTimeLabel
         {

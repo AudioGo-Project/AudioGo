@@ -22,6 +22,27 @@ namespace AudioGo.Services
 
         public bool IsPlaying { get; private set; }
 
+        /// <summary>
+        /// Phát audio POI với 3-tier fallback:
+        /// 1. Nếu có localAudioPath và file tồn tại → play local
+        /// 2. Nếu có audioUrl → stream HTTP
+        /// 3. Fallback → TTS bằng fallbackText
+        /// </summary>
+        public Task PlayPoiAudioAsync(
+            string? localAudioPath,
+            string? audioUrl,
+            string? fallbackText,
+            string languageCode = "vi")
+        {
+            if (!string.IsNullOrEmpty(localAudioPath) && File.Exists(localAudioPath))
+                return PlayFileAsync(localAudioPath);
+            if (!string.IsNullOrEmpty(audioUrl))
+                return PlayFileAsync(audioUrl);
+            if (!string.IsNullOrEmpty(fallbackText))
+                return SpeakAsync(fallbackText, languageCode);
+            return Task.CompletedTask;
+        }
+
         public async Task SpeakAsync(string text, string languageCode = "vi")
         {
             Enqueue(async ct =>
@@ -35,69 +56,19 @@ namespace AudioGo.Services
             });
         }
 
-        /// <summary>
-        /// Phát audio cho 1 POI theo thứ tự ưu tiên:
-        ///   1. LocalAudioPath (file đã download → phát được offline, 0ms latency)
-        ///   2. AudioUrl      (stream HTTP khi online, 2-5s)
-        ///   3. Device TTS   (MAUI SpeechSynthesis, fallback cuối nếu không có audio)
-        /// </summary>
-        public Task PlayPoiAudioAsync(
-            string? localAudioPath,
-            string? audioUrl,
-            string? fallbackText,
-            string languageCode = "vi")
-        {
-            return Enqueue(async ct =>
-            {
-                IsPlaying = true;
-                try
-                {
-                    // Tier 1 — local file (offline)
-                    if (!string.IsNullOrEmpty(localAudioPath) && File.Exists(localAudioPath))
-                    {
-                        await PlayStreamAsync(File.OpenRead(localAudioPath), ct);
-                        return;
-                    }
-
-                    // Tier 2 — HTTP stream (online)
-                    if (!string.IsNullOrEmpty(audioUrl) &&
-                        Connectivity.NetworkAccess == NetworkAccess.Internet)
-                    {
-                        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-                        var data = await http.GetByteArrayAsync(audioUrl, ct);
-                        await PlayStreamAsync(new MemoryStream(data), ct);
-                        return;
-                    }
-
-                    // Tier 3 — device TTS fallback
-                    if (!string.IsNullOrEmpty(fallbackText))
-                    {
-                        var locale = (await TextToSpeech.Default.GetLocalesAsync())
-                            .FirstOrDefault(l => l.Language.StartsWith(
-                                languageCode.Split('-')[0], StringComparison.OrdinalIgnoreCase));
-                        await TextToSpeech.Default.SpeakAsync(
-                            fallbackText, new SpeechOptions { Locale = locale }, ct);
-                    }
-                }
-                finally
-                {
-                    IsPlaying = false;
-                }
-            });
-        }
-
         public Task PlayFileAsync(string urlOrPath)
         {
-            return Enqueue(async ct =>
+            Enqueue(async ct =>
             {
                 IsPlaying = true;
                 try
                 {
                     DisposePlayer();
+
                     Stream stream;
                     if (urlOrPath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                     {
-                        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+                        using var http = new HttpClient();
                         var data = await http.GetByteArrayAsync(urlOrPath, ct);
                         stream = new MemoryStream(data);
                     }
@@ -106,24 +77,25 @@ namespace AudioGo.Services
                         stream = File.OpenRead(urlOrPath);
                     }
 
-                    await PlayStreamAsync(stream, ct);
+                    _player = _audioManager.CreatePlayer(stream);
+                    var tcs = new TaskCompletionSource();
+
+                    _player.PlaybackEnded += (s, e) => tcs.TrySetResult();
+                    ct.Register(() =>
+                    {
+                        _player.Stop();
+                        tcs.TrySetCanceled();
+                    });
+
+                    _player.Play();
+                    await tcs.Task;
                 }
                 finally
                 {
                     IsPlaying = false;
                 }
             });
-        }
-
-        private async Task PlayStreamAsync(Stream stream, CancellationToken ct)
-        {
-            DisposePlayer();
-            _player = _audioManager.CreatePlayer(stream);
-            var tcs = new TaskCompletionSource();
-            _player.PlaybackEnded += (s, e) => tcs.TrySetResult();
-            ct.Register(() => { _player.Stop(); tcs.TrySetCanceled(); });
-            _player.Play();
-            await tcs.Task;
+            return Task.CompletedTask;
         }
 
         public async Task StopAsync()
@@ -145,22 +117,11 @@ namespace AudioGo.Services
             }
         }
 
-        private Task Enqueue(Func<CancellationToken, Task> action)
+        private void Enqueue(Func<CancellationToken, Task> action)
         {
-            var tcs = new TaskCompletionSource();
-            _queue.Enqueue(async ct =>
-            {
-                try
-                {
-                    await action(ct);
-                    tcs.TrySetResult();
-                }
-                catch (OperationCanceledException) { tcs.TrySetCanceled(); }
-                catch (Exception ex) { tcs.TrySetException(ex); }
-            });
+            _queue.Enqueue(action);
             if (!_isProcessing)
                 _ = ProcessQueueAsync();
-            return tcs.Task;
         }
 
         private async Task ProcessQueueAsync()
