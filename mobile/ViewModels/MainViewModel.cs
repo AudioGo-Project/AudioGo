@@ -9,6 +9,7 @@ namespace AudioGo.ViewModels
     public class MainViewModel : BaseViewModel
     {
         private readonly SyncService _sync;
+        private readonly IApiService _api;
         private readonly IGeofenceService _geofence;
         private readonly IAudioService _audio;
         private readonly ILocationService _location;
@@ -18,28 +19,18 @@ namespace AudioGo.ViewModels
         public List<POI> Pois
         {
             get => _pois;
-            private set
-            {
-                SetProperty(ref _pois, value);
-                OnPropertyChanged(nameof(NearbyPois));
-                OnPropertyChanged(nameof(HasNearbyPois));
-                OnPropertyChanged(nameof(NearbyEmpty));
-            }
+            private set { SetProperty(ref _pois, value); }
         }
 
         private POI? _activePoi;
         public POI? ActivePoi
         {
             get => _activePoi;
-            private set
-            {
-                SetProperty(ref _activePoi, value);
-                OnPropertyChanged(nameof(HasActivePoi));
-            }
+            private set { SetProperty(ref _activePoi, value); }
         }
 
         private bool _isLoading;
-        public bool IsLoading
+        public new bool IsLoading
         {
             get => _isLoading;
             private set { SetProperty(ref _isLoading, value); }
@@ -65,43 +56,24 @@ namespace AudioGo.ViewModels
 
         public bool IsAudioPlaying => _audio.IsPlaying;
 
-        // ── UI helper computed properties for XAML ─────────────────
-        public List<POI> NearbyPois => _pois;
+        // ── Missing properties from XAML bindings ──
         public bool HasNearbyPois => _pois.Count > 0;
-        public bool NearbyEmpty => _pois.Count == 0 && !_isLoading;
-        public bool HasActivePoi => _activePoi != null;
+        public List<POI> NearbyPois => _pois;
+        public bool NearbyEmpty => _pois.Count == 0;
+        public bool HasActivePoi => _activePoi is not null;
 
-        // ── Commands ───────────────────────────────────────────────
-        public System.Windows.Input.ICommand PlayPoiCommand => new Command<POI>(async poi =>
+        private List<object> _recentTours = new();
+        public List<object> RecentTours
         {
-            if (poi != null) await TriggerAudioAsync(poi);
-        });
-
-        public System.Windows.Input.ICommand OpenPoiDetailCommand => new Command<POI>(async poi =>
-        {
-            if (poi != null)
-                await Shell.Current.GoToAsync($"{nameof(AudioGo_Mobile.Views.PoiDetailPage)}?poiId={poi.PoiId}");
-        });
-
-        public void ToggleAudio()
-        {
-            if (_audio.IsPlaying) _ = _audio.StopAsync();
-            else if (_activePoi != null) _ = TriggerAudioAsync(_activePoi);
-            OnPropertyChanged(nameof(IsAudioPlaying));
+            get => _recentTours;
+            private set { SetProperty(ref _recentTours, value); }
         }
 
-        public void StopAudio()
-        {
-            _ = _audio.StopAsync();
-            ActivePoi = null;
-            OnPropertyChanged(nameof(IsAudioPlaying));
-            OnPropertyChanged(nameof(HasActivePoi));
-        }
-
-        public MainViewModel(SyncService sync, IGeofenceService geofence,
+        public MainViewModel(SyncService sync, IApiService api, IGeofenceService geofence,
                              IAudioService audio, ILocationService location)
         {
             _sync = sync;
+            _api = api;
             _geofence = geofence;
             _audio = audio;
             _location = location;
@@ -117,17 +89,9 @@ namespace AudioGo.ViewModels
             try
             {
                 Pois = await _sync.GetPoisAsync(CurrentLanguage);
-                if (Pois.Count == 0)
-                {
-                    // Fallback Mock Data
-                    Pois = new List<POI>
-                    {
-                        new POI { PoiId = "mock-poi-1", Title = "Ốc Oanh Vĩnh Khánh", Description = "Quán ốc nổi tiếng với các món ốc hương rang muối ớt, sò điệp nướng mỡ hành.", Latitude = 10.7601, Longitude = 106.7025, LogoUrl = "hero_bg.jpg", LanguageCode = CurrentLanguage },
-                        new POI { PoiId = "mock-poi-2", Title = "Bánh Canh Cua Vĩnh Khánh", Description = "Quán bánh canh cua nước cốt dừa đặc trưng miền Tây.", Latitude = 10.7610, Longitude = 106.7030, LogoUrl = "hero_bg.jpg", LanguageCode = CurrentLanguage },
-                        new POI { PoiId = "mock-poi-3", Title = "Nhà thờ Xóm Chiếu", Description = "Nhà thờ cổ với kiến trúc độc đáo tại trung tâm quận 4.", Latitude = 10.7625, Longitude = 106.7051, LogoUrl = "splash_bg.jpg", LanguageCode = CurrentLanguage }
-                    };
-                }
-                
+                RecentTours = (await _api.GetToursAsync(CurrentLanguage)).Cast<object>().ToList();
+                OnPropertyChanged(nameof(HasNearbyPois));
+                OnPropertyChanged(nameof(NearbyEmpty));
                 await _geofence.StartMonitoringAsync(Pois);
                 await _location.StartAsync();
                 StatusMessage = $"Đang theo dõi {Pois.Count} điểm";
@@ -150,6 +114,9 @@ namespace AudioGo.ViewModels
             {
                 await _audio.StopAsync();
                 Pois = await _sync.GetPoisAsync(CurrentLanguage);
+                RecentTours = (await _api.GetToursAsync(CurrentLanguage)).Cast<object>().ToList();
+                OnPropertyChanged(nameof(HasNearbyPois));
+                OnPropertyChanged(nameof(NearbyEmpty));
                 await _geofence.StartMonitoringAsync(Pois);
                 StatusMessage = $"Đang theo dõi {Pois.Count} điểm ({CurrentLanguage})";
             }
@@ -177,6 +144,26 @@ namespace AudioGo.ViewModels
                 await _audio.PlayFileAsync(poi.AudioUrl);
             else if (!string.IsNullOrEmpty(poi.Description))
                 await _audio.SpeakAsync(poi.Description, poi.LanguageCode);
+            OnPropertyChanged(nameof(IsAudioPlaying));
+        }
+
+        public void ToggleAudio()
+        {
+            if (ActivePoi is null) return;
+            if (_audio.IsPlaying)
+            {
+                _ = _audio.StopAsync();
+            }
+            else
+            {
+                _ = TriggerAudioAsync(ActivePoi);
+            }
+            OnPropertyChanged(nameof(IsAudioPlaying));
+        }
+
+        public async Task StopAudio()
+        {
+            await _audio.StopAsync();
             OnPropertyChanged(nameof(IsAudioPlaying));
         }
 

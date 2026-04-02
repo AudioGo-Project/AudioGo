@@ -126,14 +126,21 @@
                                 <DataTemplate>
                                     <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10" Padding="14">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                            <!-- Icon/thumbnail -->
+                                            <!-- POI Logo: emoji fallback + real image stacked -->
                                             <Border Grid.Column="0"
                                                     BackgroundColor="{StaticResource PrimaryLight}"
                                                     StrokeShape="RoundRectangle 12"
                                                     StrokeThickness="0"
-                                                    WidthRequest="52" HeightRequest="52">
-                                                <Label Text="📍" FontSize="24"
-                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                    WidthRequest="52" HeightRequest="52"
+                                                    ClipsToBounds="True">
+                                                <Grid>
+                                                    <!-- Emoji luôn hiện (fallback khi ảnh chưa load) -->
+                                                    <Label Text="📍" FontSize="24"
+                                                           HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                    <!-- Ảnh đè lên trên khi load được -->
+                                                    <Image Source="{Binding LogoUrl}"
+                                                           Aspect="AspectFill"/>
+                                                </Grid>
                                             </Border>
                                             <!-- Info -->
                                             <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
@@ -166,7 +173,7 @@
                         </CollectionView>
                     </VerticalStackLayout>
 
-                    <!-- ── Chọn Tour ── -->
+                    <!-- ── Chọn Tour (data từ API) ── -->
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="*,Auto">
                             <Label Grid.Column="0" Text="Chọn Tour" Style="{StaticResource SectionTitle}"/>
@@ -179,53 +186,45 @@
                             </Label>
                         </Grid>
 
+                        <!-- Tour cards từ API -->
                         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                            <HorizontalStackLayout Spacing="12">
-                                <!-- Tour card 1 -->
-                                <Border Style="{StaticResource TourCard}" Padding="0">
-                                    <VerticalStackLayout Spacing="0">
-                                        <!-- Map thumbnail placeholder -->
-                                        <Border BackgroundColor="{StaticResource DarkSurface}"
-                                                StrokeShape="RoundRectangle 0"
-                                                StrokeThickness="0"
-                                                HeightRequest="110">
-                                            <Label Text="🗺️" FontSize="40"
-                                                   HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <HorizontalStackLayout Spacing="12"
+                                                  BindableLayout.ItemsSource="{Binding RecentTours}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource TourCard}" Padding="0">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding BindingContext.OpenTourCommand, Source={x:Reference ThisPage}}"
+                                                    CommandParameter="{Binding .}"/>
+                                            </Border.GestureRecognizers>
+                                            <VerticalStackLayout Spacing="0">
+                                                <!-- Thumbnail từ Azure (emoji fallback bên dưới) -->
+                                                <Grid HeightRequest="110">
+                                                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                                                            StrokeShape="RoundRectangle 0"
+                                                            StrokeThickness="0">
+                                                        <Label Text="🗺️" FontSize="40"
+                                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                    </Border>
+                                                    <Image Source="{Binding ThumbnailUrl}"
+                                                           Aspect="AspectFill"/>
+                                                </Grid>
+                                                <VerticalStackLayout Padding="12" Spacing="6">
+                                                    <Label Text="{Binding Name}"
+                                                           Style="{StaticResource SectionTitle}" FontSize="14"
+                                                           MaxLines="2" LineBreakMode="TailTruncation"/>
+                                                    <Label Text="{Binding PoiCount, StringFormat='{0} điểm'}"
+                                                           Style="{StaticResource CaptionLabel}"/>
+                                                    <Button Text="Bắt đầu" Style="{StaticResource PrimaryButton}"
+                                                            Padding="12,8" FontSize="13" CornerRadius="12"
+                                                            Command="{Binding BindingContext.OpenTourCommand, Source={x:Reference ThisPage}}"
+                                                            CommandParameter="{Binding .}"/>
+                                                </VerticalStackLayout>
+                                            </VerticalStackLayout>
                                         </Border>
-                                        <VerticalStackLayout Padding="12" Spacing="6">
-                                            <Label Text="Tour Ẩm Thực Vĩnh Khánh"
-                                                   Style="{StaticResource SectionTitle}" FontSize="14"
-                                                   MaxLines="2" LineBreakMode="TailTruncation"/>
-                                            <Label Text="8 điểm dừng · ~45 phút"
-                                                   Style="{StaticResource CaptionLabel}"/>
-                                            <Button Text="Bắt đầu" Style="{StaticResource PrimaryButton}"
-                                                    Padding="12,8" FontSize="13" CornerRadius="12"
-                                                    Clicked="OnStartTourClicked"/>
-                                        </VerticalStackLayout>
-                                    </VerticalStackLayout>
-                                </Border>
-                                <!-- Tour card 2 -->
-                                <Border Style="{StaticResource TourCard}" Padding="0">
-                                    <VerticalStackLayout Spacing="0">
-                                        <Border BackgroundColor="#1A2E2E"
-                                                StrokeShape="RoundRectangle 0"
-                                                StrokeThickness="0"
-                                                HeightRequest="110">
-                                            <Label Text="🦐" FontSize="40"
-                                                   HorizontalOptions="Center" VerticalOptions="Center"/>
-                                        </Border>
-                                        <VerticalStackLayout Padding="12" Spacing="6">
-                                            <Label Text="Tour Hải Sản Đặc Sản"
-                                                   Style="{StaticResource SectionTitle}" FontSize="14"
-                                                   MaxLines="2" LineBreakMode="TailTruncation"/>
-                                            <Label Text="5 điểm dừng · ~30 phút"
-                                                   Style="{StaticResource CaptionLabel}"/>
-                                            <Button Text="Bắt đầu" Style="{StaticResource PrimaryButton}"
-                                                    Padding="12,8" FontSize="13" CornerRadius="12"
-                                                    Clicked="OnStartTourClicked"/>
-                                        </VerticalStackLayout>
-                                    </VerticalStackLayout>
-                                </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
                         </ScrollView>
                     </VerticalStackLayout>

@@ -23,10 +23,7 @@ namespace AudioGo.Services
         public bool IsPlaying { get; private set; }
 
         /// <summary>
-        /// Phát audio POI với 3-tier fallback:
-        /// 1. Nếu có localAudioPath và file tồn tại → play local
-        /// 2. Nếu có audioUrl → stream HTTP
-        /// 3. Fallback → TTS bằng fallbackText
+        /// 3-tier fallback: local file → HTTP stream → device TTS
         /// </summary>
         public Task PlayPoiAudioAsync(
             string? localAudioPath,
@@ -36,10 +33,13 @@ namespace AudioGo.Services
         {
             if (!string.IsNullOrEmpty(localAudioPath) && File.Exists(localAudioPath))
                 return PlayFileAsync(localAudioPath);
+
             if (!string.IsNullOrEmpty(audioUrl))
                 return PlayFileAsync(audioUrl);
+
             if (!string.IsNullOrEmpty(fallbackText))
                 return SpeakAsync(fallbackText, languageCode);
+
             return Task.CompletedTask;
         }
 

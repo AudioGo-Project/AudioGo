@@ -1,3 +1,4 @@
+using AudioGo.Services.Interfaces;
 using AudioGo.ViewModels;
 using Shared.DTOs;
 using System.Collections.ObjectModel;
@@ -8,8 +9,7 @@ namespace AudioGo.ViewModels
 {
     public class TourListViewModel : BaseViewModel
     {
-        private readonly HttpClient _http;
-        private string _baseUrl;
+        private readonly IApiService _api;
 
         // Override setter to also notify HasTours when loading changes
         public new bool IsLoading
@@ -53,11 +53,9 @@ namespace AudioGo.ViewModels
             catch { /* silent */ }
         }
 
-        public TourListViewModel()
+        public TourListViewModel(IApiService api)
         {
-            _http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-            // Fallback URL nếu chưa có DI — đổi khi có config
-            _baseUrl = "http://10.0.2.2:5000/api/mobile";
+            _api = api;
 
             OpenTourCommand = new Command<TourRowVm>(async tour =>
             {
@@ -79,8 +77,7 @@ namespace AudioGo.ViewModels
             IsLoading = true;
             try
             {
-                var result = await _http.GetFromJsonAsync<List<TourSummaryDto>>(
-                    $"{_baseUrl}/tours?lang={lang}");
+                var result = await _api.GetToursAsync(languageCode: lang);
 
                 _allTours = result?.Select(t => new TourRowVm(t)).ToList() ?? new();
                 FilterTours(SearchText);

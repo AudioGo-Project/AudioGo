@@ -29,13 +29,15 @@ public static class MauiProgram
         builder.Services.AddSingleton(new AppDatabase(dbPath));
 
         // ── HTTP Client ───────────────────────────────────────────
-        builder.Services.AddHttpClient<IApiService, ApiService>(client =>
-        {
-            // 192.168.43.73 = IP LAN của laptop trong mạng WiFi chung
-            // Đổi về http://10.0.2.2:5086/ nếu dùng Android Emulator
-            client.BaseAddress = new Uri("http://192.168.43.73:5086/");
-            client.Timeout = TimeSpan.FromSeconds(15);
-        });
+            builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+            {
+                // 10.0.2.2 = IP đặc biệt dành cho Android Emulator kết nối về localhost của PC
+                // Đổi về 192.168.x.x nếu dùng thiết bị thật trên cùng mạng WiFi
+                client.BaseAddress = new Uri(DeviceInfo.DeviceType == DeviceType.Virtual 
+                    ? "http://10.0.2.2:5086/" 
+                    : "http://192.168.43.73:5086/");
+                client.Timeout = TimeSpan.FromSeconds(15);
+            });
 
         // ── Services ──────────────────────────────────────────────
         builder.Services.AddSingleton(AudioManager.Current);
@@ -58,7 +60,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<MapPage>();
         builder.Services.AddTransient<TourListPage>();
         builder.Services.AddTransient<PoiDetailPage>();
-        builder.Services.AddTransient<QrScanPage>();
         builder.Services.AddTransient<SearchPage>();
         builder.Services.AddTransient<CreateTourPage>();
         builder.Services.AddTransient<TourDetailPage>();

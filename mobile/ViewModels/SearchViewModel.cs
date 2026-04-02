@@ -1,3 +1,4 @@
+using AudioGo.Services.Interfaces;
 using AudioGo.ViewModels;
 using Shared;
 using System.Collections.ObjectModel;
@@ -8,8 +9,7 @@ namespace AudioGo.ViewModels
 {
     public class SearchViewModel : BaseViewModel
     {
-        private readonly HttpClient _http;
-        private readonly string _baseUrl = "http://10.0.2.2:5000/api/mobile";
+        private readonly IApiService _api;
 
         // Override setter to also call UpdateStates when loading changes
         public new bool IsLoading
@@ -54,9 +54,9 @@ namespace AudioGo.ViewModels
 
         public ICommand FilterCommand { get; }
 
-        public SearchViewModel()
+        public SearchViewModel(IApiService api)
         {
-            _http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            _api = api;
             FilterCommand = new Command<string>(cat =>
             {
                 ActiveCategory = cat ?? string.Empty;
@@ -75,15 +75,12 @@ namespace AudioGo.ViewModels
             try
             {
                 // Gọi POI endpoint
-                var poiUrl = $"{_baseUrl}/pois?lang=vi&q={Uri.EscapeDataString(query)}" +
-                             (string.IsNullOrEmpty(ActiveCategory) ? "" : $"&category={Uri.EscapeDataString(ActiveCategory)}");
-                var pois = await _http.GetFromJsonAsync<List<POI>>(poiUrl);
+                var pois = await _api.GetPoisAsync(languageCode: "vi", query: query, category: ActiveCategory);
                 if (pois is not null)
                     foreach (var p in pois) Pois.Add(new PoiSearchVm(p));
 
                 // Gọi Tours endpoint
-                var tours = await _http.GetFromJsonAsync<List<Shared.DTOs.TourSummaryDto>>(
-                    $"{_baseUrl}/tours?lang=vi&q={Uri.EscapeDataString(query)}");
+                var tours = await _api.GetToursAsync(languageCode: "vi", query: query);
                 if (tours is not null)
                     foreach (var t in tours) Tours.Add(new TourSearchVm(t));
             }

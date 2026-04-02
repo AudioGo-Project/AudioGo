@@ -40,7 +40,7 @@ namespace AudioGo.Services
             // nếu timeout/lỗi thì fallback về SQLite cache.
             try
             {
-                var serverPois = await _api.GetPoisAsync(languageCode, ct);
+                var serverPois = await _api.GetPoisAsync(languageCode: languageCode, ct: ct);
 
                 if (serverPois.Count > 0)
                 {
