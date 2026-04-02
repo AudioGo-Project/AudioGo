@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Server.Models;
 using Server.Repositories.Interfaces;
@@ -8,6 +9,7 @@ namespace Server.Controllers.Mobile
 {
     [ApiController]
     [Route("api/mobile/pois")]
+    [EnableCors("MobilePolicy")]
     public class PoiController : ControllerBase
     {
         private readonly IPoiRepository _repo;
@@ -20,11 +22,21 @@ namespace Server.Controllers.Mobile
         }
 
         // GET /api/mobile/pois?lang=vi
+        // GET /api/mobile/pois?lang=vi&q=hải+sản&category=Hải Sản
         [HttpGet]
         public async Task<ActionResult<IEnumerable<POI>>> GetAll(
-            [FromQuery] string lang = "vi")
+            [FromQuery] string lang = "vi",
+            [FromQuery] string? q = null,
+            [FromQuery] string? category = null)
         {
-            var pois = await _repo.GetAllAsync();
+            List<Poi> pois;
+
+            // Nếu có search term → dùng SearchAsync, ngược lại GetAllAsync
+            if (!string.IsNullOrWhiteSpace(q) || !string.IsNullOrWhiteSpace(category))
+                pois = await _repo.SearchAsync(q, category);
+            else
+                pois = await _repo.GetAllAsync();
+
             var dtos = new List<POI>();
             foreach (var p in pois)
                 dtos.Add(await ToDtoAsync(p, lang));

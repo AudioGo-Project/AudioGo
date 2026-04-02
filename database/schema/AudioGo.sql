@@ -123,13 +123,23 @@ GO
 IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Tour')
 BEGIN
     CREATE TABLE [Tour] (
-        [TourId]      nvarchar(255) NOT NULL PRIMARY KEY,
-        [Name]        nvarchar(500) NOT NULL,
-        [Description] nvarchar(max) NULL,
-        [CreatedAt]   datetime      NOT NULL DEFAULT (GETDATE()),
-        [UpdatedAt]   datetime      NULL
+        [TourId]       nvarchar(255)  NOT NULL PRIMARY KEY,
+        [Name]         nvarchar(500)  NOT NULL,
+        [Description]  nvarchar(max)  NULL,
+        [ThumbnailUrl] nvarchar(1000) NULL,
+        [CreatedAt]    datetime       NOT NULL DEFAULT (GETDATE()),
+        [UpdatedAt]    datetime       NULL
     );
     PRINT 'Table Tour created.';
+END
+ELSE
+BEGIN
+    -- Thêm cột ThumbnailUrl nếu chưa có (idempotent khi chạy lại)
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Tour') AND name = 'ThumbnailUrl')
+    BEGIN
+        ALTER TABLE [Tour] ADD [ThumbnailUrl] nvarchar(1000) NULL;
+        PRINT 'Column ThumbnailUrl added to Tour.';
+    END
 END
 GO
 

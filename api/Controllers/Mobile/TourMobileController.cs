@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Server.Repositories.Interfaces;
 using Server.Services.Interfaces;
@@ -7,6 +8,7 @@ namespace Server.Controllers.Mobile
 {
     [ApiController]
     [Route("api/mobile/tours")]
+    [EnableCors("MobilePolicy")]
     public class TourMobileController : ControllerBase
     {
         private readonly ITourRepository _tourRepo;
@@ -19,19 +21,31 @@ namespace Server.Controllers.Mobile
         }
 
         // GET /api/mobile/tours?lang=vi
+        // GET /api/mobile/tours?lang=vi&q=hải+sản
         [HttpGet]
         public async Task<ActionResult<List<TourSummaryDto>>> GetAll(
-            [FromQuery] string lang = "vi")
+            [FromQuery] string lang = "vi",
+            [FromQuery] string? q = null)
         {
             var tours = await _tourRepo.GetAllAsync();
+
+            // Filter theo tên tour nếu có search query
+            if (!string.IsNullOrWhiteSpace(q))
+                tours = tours.Where(t =>
+                    t.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    (t.Description?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
+                ).ToList();
+
             var result = tours.Select(t => new TourSummaryDto(
                 TourId:       t.TourId,
                 Name:         t.Name,
                 Description:  t.Description ?? string.Empty,
                 PoiCount:     t.TourPois.Count,
-                ThumbnailUrl: t.TourPois
-                                .OrderBy(tp => tp.StepOrder)
-                                .FirstOrDefault()?.Poi?.LogoUrl,
+                // Ưu tiên ThumbnailUrl của tour, fallback sang LogoUrl của POI đầu tiên
+                ThumbnailUrl: t.ThumbnailUrl
+                              ?? t.TourPois
+                                   .OrderBy(tp => tp.StepOrder)
+                                   .FirstOrDefault()?.Poi?.LogoUrl,
                 CreatedAt:    t.CreatedAt
             )).ToList();
 

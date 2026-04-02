@@ -1,5 +1,4 @@
 using System.Text;
-using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,12 +8,15 @@ using Server.Repositories.Interfaces;
 using Server.Services;
 using Server.Services.Interfaces;
 
-// ── Load .env TRƯỚC CreateBuilder (CreateBuilder snapshot env vars ngay lúc khởi tạo) ──
-var envFile = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-if (File.Exists(envFile))
-    DotNetEnv.Env.Load(envFile);
-
 var builder = WebApplication.CreateBuilder(args);
+
+// ── Load .env (secrets không commit lên git) ──────────────────────────
+var envPath = Path.Combine(builder.Environment.ContentRootPath, ".env");
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+    builder.Configuration.AddEnvironmentVariables();
+}
 
 // ── CORS ──────────────────────────────────────────────────────────────
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
@@ -59,6 +61,7 @@ builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
 builder.Services.AddSingleton<ITranslationService, TranslationService>();
 builder.Services.AddSingleton<ITtsService, TtsService>();
 builder.Services.AddScoped<IContentPipelineService, ContentPipelineService>();
+builder.Services.AddHttpContextAccessor();
 
 // ── Controllers & OpenAPI ─────────────────────────────────────────────
 builder.Services.AddControllers();
