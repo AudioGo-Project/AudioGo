@@ -87,18 +87,13 @@ const InfoCardOfAddPOI = ({ form, handleChange, contentApi, categories = [] }) =
         {/* RADIUS */}
         <div className="pt-2">
           <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
-            Bán kính kích hoạt (M)
+            Bán kính kích hoạt
           </label>
-          <div className="flex items-center gap-4">
-            <input 
-              type="range"
-              value={form.radius}
-              className="flex-1 accent-pink-500"
-            />
-            <span className="text-xl font-black text-pink-500">
-              {form.radius}
-              <small className="text-[10px] ml-1">M</small>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-pink-500">
+              50 <small className="text-sm">M</small>
             </span>
+            <span className="text-xs text-gray-400 italic">(mặc định)</span>
           </div>
         </div>
 
