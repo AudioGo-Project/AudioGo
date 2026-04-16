@@ -1,3 +1,53 @@
+// import axios from "axios"
+
+// const API_URL = "http://localhost:5086/api"
+
+// const getToken = () =>
+//   localStorage.getItem("token") || sessionStorage.getItem("token")
+
+// // GET POI REQUESTS FOR CURRENT OWNER
+// export const getMyPoiRequests = async (status = null) => {
+//   const params = new URLSearchParams()
+//   if (status) {
+//     params.append("status", status)
+//   }
+
+//   const res = await axios.get(
+//     `${API_URL}/cms/pois/requests/my-requests${params.toString() ? "?" + params.toString() : ""}`,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${getToken()}`
+//       }
+//     }
+//   )
+//   return res.data
+// }
+
+// // GET POI REQUEST DETAIL BY REQUEST ID
+// export const getPoiRequestDetail = async (requestId) => {
+//   const res = await axios.get(
+//     `${API_URL}/cms/pois/requests/${requestId}`,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${getToken()}`
+//       }
+//     }
+//   )
+//   return res.data
+// }
+
+// export const createPoiRequest = async (data) => {
+//   const res = await axios.post(
+//     `${API_URL}/cms/pois/requests`,
+//     data,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${getToken()}`
+//       }
+//     }
+//   )
+//   return res.data
+// }
 import axios from "axios"
 import { getPoiDetail } from "./poiApi"
 

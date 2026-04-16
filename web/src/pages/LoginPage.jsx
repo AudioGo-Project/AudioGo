@@ -2,7 +2,6 @@ import React from 'react';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, LockKeyhole, LogIn, UtensilsCrossed } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 import useAuth from "@/hooks/useAuth";
 
@@ -12,6 +11,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("");
 
   const { login, loading, error } = useAuth()
   const navigate = useNavigate()
@@ -21,17 +21,14 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      if (!username.trim() || !password.trim()) {
-        toast.error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
-        return;
-      }
+      setErrorMsg("");
 
       const res = await login(username, password, rememberMe);
 
       const role = res?.user?.role;
 
       if (!role) {
-        toast.error("Không có quyền truy cập");
+        setErrorMsg("Không có quyền truy cập");
         return;
       }
 
@@ -42,7 +39,7 @@ const LoginPage = () => {
       }
 
     } catch (err) {
-      toast.error(err || "Đăng nhập thất bại"); 
+      setErrorMsg(err); 
     }
   };
   
@@ -115,6 +112,12 @@ const LoginPage = () => {
               {loading ? "Đang đăng nhập..." : "Đăng nhập"}
               <LogIn className="w-5 h-5" />
             </button>
+
+            {error && (
+              <p className="text-red-500 text-sm mt-2">
+                {errorMsg}
+              </p>
+            )}
           </form>
 
           <p className="mt-10 text-center text-gray-400 text-xs font-medium uppercase tracking-widest">

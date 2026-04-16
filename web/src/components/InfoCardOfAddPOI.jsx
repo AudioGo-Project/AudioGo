@@ -1,9 +1,13 @@
 import { MapPin, Plus, Minus } from "lucide-react";
 
-const InfoCardOfAddPOI = ({ form, handleChange, categories = [] }) => {
+const InfoCardOfAddPOI = ({ form, handleChange, contentApi, categories = [] }) => {
 
   const adjustValue = (key, amount) => {
     handleChange(key, (parseFloat(form[key]) || 0) + amount);
+  };
+
+  const getLanguageName = (code) => {
+    return contentApi.languages[code] || code;
   };
 
   return (

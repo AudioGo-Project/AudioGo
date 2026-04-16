@@ -17,14 +17,23 @@ import { getCategoriesApi } from "@/api/categoryApi";
 const AddPOIPage = () => {
   const navigate = useNavigate();
 
+  const contentApi = {
+    languages: {
+      en: "English",
+      vi: "Tiếng Việt",
+      fr: "Français",
+      es: "Español",
+    },
+  };
+
   // State khởi tạo cho POI mới
   const [form, setForm] = useState({
     name: "",
     category: "",
     lat: 10.7574, // Mặc định Vĩnh Khánh Q4
     lng: 106.7020,
-    radius: 50, // Hardcode 50m
-    languageCode: "en",
+    radius: 50,
+    languageCode: "en", // ✅ Sử dụng languageCode thay vì language
     images: [],
     audio: "",
     script: "",
@@ -56,23 +65,10 @@ const AddPOIPage = () => {
       toast.error("Vui lòng nhập tên POI");
       return;
     }
-
-    if (!form.category.trim()) {
-      toast.error("Vui lòng chọn danh mục");
-      return;
-    }
-
     if (form.images.length === 0) {
       toast.error("Vui lòng thêm ít nhất một hình ảnh");
       return;
     }
-
-    if (!form.script.trim()) {
-      toast.error("Vui lòng nhập nội dung script");
-      return;
-    }
-
-    // Audio is optional - no validation needed
 
     // Show confirmation modal
     setShowConfirmModal(true);
@@ -80,12 +76,13 @@ const AddPOIPage = () => {
 
   const handleConfirmCreate = async () => {
     try {
+      // 根据分类名称查找对应的 categoryId
       const selectedCategory = categories.find(cat => cat.name === form.category);
       const categoryIds = selectedCategory ? [selectedCategory.categoryId] : [];
 
       const payload = {
         ActionType: "CREATE",
-        PoiId: null,  
+        PoiId: null,  // ✅ New POI, poiId = null
         Draft: {
           Title: form.name,
           Description: form.script || "",
@@ -96,8 +93,8 @@ const AddPOIPage = () => {
           LogoUrl: form.images?.[0] || "",
           GalleryImageUrls: form.images || [],
           AudioUrl: form.audio || "",
-          CategoryIds: categoryIds,  
-          LanguageCode: form.languageCode || "en",  
+          CategoryIds: categoryIds,  // ✅ 保存为 categoryId 数组
+          LanguageCode: form.languageCode || "en",  // ✅ 保存语言代码
         }
       };
 
@@ -176,7 +173,7 @@ const AddPOIPage = () => {
         {/* RIGHT COLUMN: Settings & Location */}
         <div className="col-span-4 space-y-8">
           {/* Basic Info Card */}
-          <InfoCardOfAddPOI form={form} handleChange={handleChange} categories={categories} />
+          <InfoCardOfAddPOI form={form} handleChange={handleChange} contentApi={contentApi} categories={categories} />
 
           {/* Location Card */}
           <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm space-y-4 overflow-hidden">
