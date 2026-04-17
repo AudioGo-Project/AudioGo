@@ -31,6 +31,7 @@ namespace Shared.DTOs
     /// <summary>Chủ quán gửi khi muốn tạo, sửa, hoặc xoá POI.</summary>
     public record SubmitPoiRequestDto(
         string        ActionType,   // CREATE | UPDATE | DELETE
+        string?       PoiId, 
         PoiDraftDto?  Draft         // NULL nếu ActionType = DELETE
     );
 
@@ -48,7 +49,8 @@ namespace Shared.DTOs
         string   ActionType,
         string   Status,
         DateTime CreatedAt,
-        string?  RejectReason
+        string?  RejectReason,
+        string?  ProposedData
     );
 
     /// <summary>Chi tiết 1 yêu cầu (dùng trên màn hình Diff của Admin).</summary>
